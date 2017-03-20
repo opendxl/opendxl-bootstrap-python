@@ -4,42 +4,99 @@ from dxlbootstrap import get_version
 
 
 class AppTemplateConfig(TemplateConfig):
+    """
+    Configuration for the application template
+    """
 
     def __init__(self, config):
+        """
+        Constructs the configuration
+
+        :param config: The Python configuration to wrap
+        """
         super(AppTemplateConfig, self).__init__(config)
 
     @property
     def application_section(self):
+        """
+        Returns the "application" section of the configuration
+
+        :return: The "application" section of the configuration
+        """
         class ApplicationConfigSection(TemplateConfigSection):
+            """
+            Configuration section for the "application"
+            """
+
             def __init__(self, template_config):
+                """
+                Constructs the section
+
+                :param template_config: The template configuration
+                """
                 super(ApplicationConfigSection, self).__init__(template_config, "Application")
 
             @property
             def name(self):
+                """
+                Returns the name of the application (used for the Python package name, etc.)
+
+                :return: The name of the application (used for the Python package name, etc.)
+                """
                 return self._get_property("name", required=True)
 
             @property
             def full_name(self):
+                """
+                Returns the "full name" (human readable name) for the application
+
+                :return: The "full name" (human readable name) for the application
+                """
                 return self._get_property("fullName", required=True)
 
             @property
             def app_class_name(self):
+                """
+                Returns the name for the "application" Python class
+
+                :return: The name for the "application" Python class
+                """
                 return self._get_property("appClassName", required=True)
 
             @property
             def copyright(self):
+                """
+                Returns the "copyright" for the application
+
+                :return: The "copyright" for the application
+                """
                 return self._get_property("copyright", required=False, default_value="")
 
             @property
             def event_handlers(self):
+                """
+                Returns the list of "event handler" names for the application
+
+                :return: The list of "event handler" names for the application
+                """
                 return self._get_list_property("eventHandlers", required=False, default_value=[])
 
             @property
             def services(self):
+                """
+                Returns the list of "service" names for the application
+
+                :return: The list of "service" names for the application
+                """
                 return self._get_list_property("services", required=False, default_value=[])
 
             @property
             def install_requires(self):
+                """
+                Returns a list containing the Python packages that the application requires
+
+                :return: A list containing the Python packages that the application requires
+                """
                 reqs = self._get_list_property("installRequires", required=False, default_value=[])[:]
                 reqs.insert(0, "dxlbootstrap=={0}".format(get_version()))
                 reqs.insert(0, "dxlclient")
@@ -48,61 +105,156 @@ class AppTemplateConfig(TemplateConfig):
         return ApplicationConfigSection(self)
 
     def get_service_section(self, service_name):
+        """
+        Returns the configuration section for a particular "service"
+
+        :param service_name: The name of the service
+        :return: The configuration section for a particular "service"
+        """
+
         class ServiceConfigSection(TemplateConfigSection):
+            """
+            Configuration section for a particular "service"
+            """
             def __init__(self, template_config):
+                """
+                Constructs the section
+
+                :param template_config: The template configuration
+                """
                 super(ServiceConfigSection, self).__init__(template_config, service_name)
 
             @property
             def service_type(self):
+                """
+                Returns the service type
+
+                :return: The service type
+                """
                 return self._get_property("serviceType", required=True)
 
             @property
             def request_handlers(self):
+                """
+                Returns the list of request handler "names" for the service
+                :return:
+                """
                 return self._get_list_property("requestHandlers", required=False, default_value=[])
 
         return ServiceConfigSection(self)
 
     def get_request_handler_section(self, name):
+        """
+        Returns the configuration section for a particular "request handler"
+
+        :param name: The name of the request handler
+        :return: The configuration section for a particular "request handler"
+        """
+
         class RequestHandlerConfigSection(TemplateConfigSection):
+            """
+            Configuration section for a particular "request handler"
+            """
+
             def __init__(self, template_config):
+                """
+                Constructs the section
+
+                :param template_config: The template configuration
+                """
                 super(RequestHandlerConfigSection, self).__init__(template_config, name)
 
             @property
             def topic(self):
+                """
+                Returns the topic associated with the request handler
+
+                :return: The topic associated with the request handler
+                """
                 return self._get_property("topic", required=True)
 
             @property
             def class_name(self):
+                """
+                Returns the class name to use for the request handler
+
+                :return: The class name to use for the request handler
+                """
                 return self._get_property("className", required=True)
 
             @property
             def separate_thread(self):
+                """
+                Returns whether the request handler should be invoked on a thread other than the
+                incoming message thread (required if synchronous requests are made in the handler)
+
+                :return: Whether the request handler should be invoked on a thread other than the
+                    incoming message thread (required if synchronous requests are made in the handler)
+                """
                 return self._get_boolean_property("separateThread", required=False, default_value=True)
 
         return RequestHandlerConfigSection(self)
 
     def get_event_handler_section(self, name):
+        """
+        Returns the configuration section for a particular "event handler"
+
+        :param name: The name of the event handler
+        :return: The configuration section for a particular "event handler"
+        """
         return self.get_request_handler_section(name)
 
 
 class AppTemplate(Template):
+    """
+    Template which is used to generate a DXL "application". An application runs persistently and can
+    listen for DXL events and/or register DXL services.
+    """
 
     @staticmethod
     def get_name():
+        """
+        The name of the template
+
+        :return: The name of the template
+        """
         return "application-template"
 
     @staticmethod
     def new_instance():
+        """
+        Factory method for the template
+
+        :return: A new instance of the application template
+        """
         return AppTemplate()
 
     def __init__(self):
+        """
+        Constructs the template
+        """
         super(AppTemplate, self).__init__(__name__)
 
     def _create_template_config(self, config):
+        """
+        Creates and returns the application configuration
+
+        :param config: The Python configuration
+        :return: The application configuration
+        """
         return AppTemplateConfig(config)
 
     @staticmethod
-    def create_border(length, char):
+    def create_underline(length, char):
+        """
+        Used to create an underline of the specified character.
+
+        For example: "========="
+
+        :param length: The length of the underline
+        :param char: The character to use
+        :return: An underline
+        """
         ret = ""
         for x in range(0, length):
             ret += char
@@ -110,6 +262,13 @@ class AppTemplate(Template):
 
     @staticmethod
     def create_install_requires(config):
+        """
+        Used to create the text content for the "install requires" portion of the Python
+        setup.py file
+
+        :param config: The application configuration
+        :return: The text content for the "install requires" portion of the Python setup.py file
+        """
         ret = ""
         first = True
         for req in config.application_section.install_requires:
@@ -119,6 +278,12 @@ class AppTemplate(Template):
 
     @staticmethod
     def create_pip_install(config):
+        """
+        Used to create the text content for "RUN pip install..." lines within the Dockerfile
+
+        :param config: The application configuration
+        :return: The text content for "RUN pip install..." lines within the Dockerfile
+        """
         ret = ""
         first = True
         for req in config.application_section.install_requires:
@@ -127,6 +292,13 @@ class AppTemplate(Template):
         return ret
 
     def _build_root_directory(self, context, components_dict):
+        """
+        Builds the "root" directory components of the output
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :return: The "root" directory components of the output
+        """
         config = context.template.template_config
 
         root = DirTemplateComponent("")
@@ -135,7 +307,7 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("README", "README.tmpl",
                                           {"fullName": config.application_section.full_name,
                                            "fullNameSep":
-                                               self.create_border(len(config.application_section.full_name), "="),
+                                               self.create_underline(len(config.application_section.full_name), "="),
                                            "copyright": config.application_section.copyright})
         root.add_child(file_comp)
 
@@ -165,6 +337,13 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
     def _build_config_directory(self, context, components_dict):
+        """
+        Builds the "config" directory components of the output
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :return: The "config" directory components of the output
+        """
         config = context.template.template_config
         root = components_dict["root"]
 
@@ -181,6 +360,13 @@ class AppTemplate(Template):
         config_dir.add_child(file_comp)
 
     def _build_sample_directory(self, context, components_dict):
+        """
+        Builds the "sample" directory components of the output
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :return: The "sample" directory components of the output
+        """
         del context
         root = components_dict["root"]
 
@@ -201,7 +387,13 @@ class AppTemplate(Template):
         components_dict["basic_sample_comp"] = basic_sample_comp
 
     def _build_docs_directory(self, context, components_dict):
+        """
+        Builds the "docs" directory components of the output
 
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :return: The "docs" directory components of the output
+        """
         config = context.template.template_config
         root = components_dict["root"]
 
@@ -220,7 +412,7 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("index.rst", "doc/sdk/index.rst.tmpl",
                                           {"fullName": config.application_section.full_name,
                                            "fullNameSep":
-                                               self.create_border(len(config.application_section.full_name), "="),
+                                               self.create_underline(len(config.application_section.full_name), "="),
                                            "name": config.application_section.name})
         sdk_dir.add_child(file_comp)
 
@@ -241,7 +433,7 @@ class AppTemplate(Template):
                                           {"fullName": config.application_section.full_name,
                                            "name": config.application_section.name,
                                            "configTitle": config_title,
-                                           "configTitleSep": self.create_border(len(config_title), "-")})
+                                           "configTitleSep": self.create_underline(len(config_title), "-")})
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("sampleconfig.rst", "doc/sdk/sampleconfig.rst.tmpl",
@@ -249,7 +441,20 @@ class AppTemplate(Template):
         sdk_dir.add_child(file_comp)
 
     def _build_application_directory(self, context, components_dict):
+        """
+        Builds the application directory components of the output
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :return: The application directory components of the output
+        """
         def _get_additional_imports():
+            """
+            Outputs the imports for the "app.py" file (based on whether event and/or request callbacks
+            have been defined in the configuration)
+            :return: The imports for the "app.py" file (based on whether event and/or request callbacks
+                have been defined in the configuration)
+            """
             ret = ""
             if components_dict["has_events"] or components_dict["has_services"]:
                 ret += "\n"
@@ -286,6 +491,12 @@ class AppTemplate(Template):
         app_dir.add_child(file_comp)
 
     def _build_event_handlers(self, context, components_dict):
+        """
+        Builds the event handlers for the application
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        """
         config = context.template.template_config
 
         basic_sample_comp = components_dict["basic_sample_comp"]
@@ -325,6 +536,12 @@ class AppTemplate(Template):
                 basic_sample_comp.add_child(event_code_comp)
 
     def _build_services(self, context, components_dict):
+        """
+        Builds the services exposed by the application
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        """
         config = context.template.template_config
 
         basic_sample_comp = components_dict["basic_sample_comp"]
@@ -377,6 +594,12 @@ class AppTemplate(Template):
                 register_services_def_comp.add_child(code_comp)
 
     def _get_root_component(self, context):
+        """
+        Returns the root component for the template generation
+
+        :param context: The template context
+        :return: The root component for the template generation
+        """
 
         components_dict = {
             "has_services": False,
