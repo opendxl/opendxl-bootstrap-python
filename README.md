@@ -9,9 +9,9 @@ application which exposes services, etc.).
 
 ## Documentation
 
-See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python) for an overview of the DXL Bootstrap application and usage examples.
+See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python/wiki) for an overview of the DXL Bootstrap application and usage examples.
 
-See the [DXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python) for
+See the [DXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python/pydoc) for
 installation instructions and usage examples.
 
 ## Installation
