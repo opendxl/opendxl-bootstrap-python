@@ -356,7 +356,8 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
         config_dir.add_child(file_comp)
 
-        file_comp = FileTemplateComponent(config.application_section.name + ".config", "config/app.config.tmpl")
+        file_comp = FileTemplateComponent(config.application_section.name + ".config", "config/app.config.tmpl",
+                                          {"fullName": config.application_section.full_name})
         config_dir.add_child(file_comp)
 
     def _build_sample_directory(self, context, components_dict):
