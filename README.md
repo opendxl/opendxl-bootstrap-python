@@ -1,4 +1,4 @@
-# McAfee DXL Bootstrap Application
+# DXL Bootstrap Application
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Overview
@@ -9,14 +9,14 @@ application which exposes services, etc.).
 
 ## Documentation
 
-See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python) for an overview of the McAfee DXL Bootstrap application and usage examples.
+See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python) for an overview of the DXL Bootstrap application and usage examples.
 
-See the [McAfee DXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python) for
+See the [DXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python) for
 installation instructions and usage examples.
 
 ## Installation
 
-To start using the McAfee DXL Bootstrap Application:
+To start using the DXL Bootstrap Application:
 
 * Download the [Latest Release](https://github.com/opendxl/opendxl-bootstrap-python/latest)
 * Extract the release .zip file
