@@ -1,5 +1,5 @@
-McAfee DXL Bootstrap Application Documentation
-==============================================
+OpenDXL Bootstrap Application Documentation
+===========================================
 
 Supporting Classes and Methods
 ------------------------------

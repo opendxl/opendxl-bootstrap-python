@@ -1,22 +1,22 @@
-# DXL Bootstrap Application
+# OpenDXL Bootstrap Application
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Overview
 
-The purpose of the DXL Bootstrap application is to generate the structure and related
+The purpose of the OpenDXL Bootstrap application is to generate the structure and related
 files necessary (a project) for developing a [Data Exchange Layer](http://www.mcafee.com/us/solutions/data-exchange-layer.aspx) (DXL) integration with Python. Multiple templates are available which control the type of project to generate (a client wrapper, a persistent
 application which exposes services, etc.).
 
 ## Documentation
 
-See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python/wiki) for an overview of the DXL Bootstrap application and usage examples.
+See the [Wiki](https://github.com/opendxl/opendxl-bootstrap-python/wiki) for an overview of the OpenDXL Bootstrap application and usage examples.
 
-See the [DXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python/pydoc) for
+See the [OpenDXL Bootstrap application documentation](https://opendxl.github.io/opendxl-bootstrap-python/pydoc) for
 installation instructions and usage examples.
 
 ## Installation
 
-To start using the DXL Bootstrap Application:
+To start using the OpenDXL Bootstrap Application:
 
 * Download the [Latest Release](https://github.com/opendxl/opendxl-bootstrap-python/latest)
 * Extract the release .zip file

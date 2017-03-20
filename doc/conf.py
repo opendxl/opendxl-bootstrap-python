@@ -28,7 +28,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'McAfee DXL Bootstrap Application'
+project = u'McAfee OpenDXL Bootstrap Application'
 copyright = u'2017, McAfee Inc'
 
 # The version info for the project you're documenting, acts as replacement for

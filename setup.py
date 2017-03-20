@@ -51,7 +51,7 @@ dist = setup(
     # Details
     url="http://www.mcafee.com/",
 
-    description="DXL Bootstrap Application",
+    description="OpenDXL Bootstrap Application",
 
     long_description=open('README').read(),
 
