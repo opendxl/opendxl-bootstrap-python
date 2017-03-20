@@ -1,0 +1,34 @@
+class ${className}(RequestCallback):
+    """
+    '${name}' request handler registered with topic '${topic}'
+    """
+
+    def __init__(self, app):
+        """
+        Constructor parameters:
+
+        :param app: The application this handler is associated with
+        """
+        super(${className}, self).__init__()
+        self._app = app
+
+    def on_request(self, request):
+        """
+        Invoked when a request message is received.
+
+        :param request: The request message
+        """
+        # Handle request
+        logger.info("Request received on topic: '{0}' with payload: '{1}'".format(
+            request.destination_topic, request.payload.decode("utf-8")))
+
+        # Create response
+        res = Response(request)
+
+        # Set payload
+        res.payload = "${name} response payload".encode("utf-8")
+
+        # Send response
+        self._app.client.send_response(res)
+
+
