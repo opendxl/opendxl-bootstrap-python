@@ -1,13 +1,22 @@
 import pkg_resources
 import re
-from abc import ABCMeta, abstractproperty, abstractmethod
+from abc import ABCMeta, abstractmethod
 from ConfigParser import NoOptionError
 from cStringIO import StringIO
 from csv import reader
 
 
 class TemplateContext(object):
+    """
+    Context information used to communicate between different components during the
+    generation process
+    """
     def __init__(self, template):
+        """
+        Constructs the context object
+
+        :param template: The template that is being used for the generation
+        """
         self._template = template
         self._current_dir = ""
         self._file = None
@@ -15,33 +24,72 @@ class TemplateContext(object):
 
     @property
     def template(self):
+        """
+        Returns the template that is being used for the generation
+
+        :return: The template that is being used for the generation
+        """
         return self._template
 
     @property
     def current_directory(self):
+        """
+        Returns the current output directory
+
+        :return: The current output directory
+        """
         return self._current_dir
 
     @current_directory.setter
     def current_directory(self, dir):
+        """
+        Sets the current output directory
+
+        :param dir: The output directory
+        """
         self._current_dir = dir
 
     @property
     def indent_level(self):
+        """
+        Returns the current indent level
+
+        :return: The current indent level
+        """
         return self._indent_level
 
     @indent_level.setter
     def indent_level(self, indent_level):
+        """
+        Sets the indent level
+
+        :param indent_level: The indent level
+        """
         self._indent_level = indent_level
 
     @property
     def file(self):
+        """
+        Returns the file that is currently being written to
+
+        :return: The file that is currently being written to
+        """
         return self._file
 
     @file.setter
     def file(self, file):
+        """
+        Sets the file to write to
+        :param file: The file to write to
+        """
         self._file = file
 
     def write_to_file(self, lines):
+        """
+        Writes the specified lines to the current file
+
+        :param lines: The lines to write to the file
+        """
         for line in lines:
             indent = ""
             for i in range(0, self._indent_level):
@@ -50,12 +98,24 @@ class TemplateContext(object):
 
 
 class TemplateConfigSection(object):
+    """
+    Used to access properties from a particular section of a template configuration
+    (as read from the template-specific configuration file)
+    """
     def __init__(self, template_config, section_name):
         self._template_config = template_config
         self._section_name = section_name
         self._config = template_config.config
 
     def _get_property(self, property_name, default_value=None, required=False):
+        """
+        Returns the value for the specified property
+
+        :param property_name: The property name
+        :param default_value: The default value
+        :param required: If the value is required
+        :return: The value associated with the specified name
+        """
         ret = None
         try:
             ret = self._config.get(self._section_name, property_name)
@@ -67,6 +127,14 @@ class TemplateConfigSection(object):
         return ret
 
     def _get_boolean_property(self, property_name, default_value=None, required=False):
+        """
+        Returns the boolean value for the specified property
+
+        :param property_name: The property name
+        :param default_value: The default value
+        :param required: If the value is required
+        :return: The value for the specified property
+        """
         ret = None
         try:
             ret = self._config.getboolean(self._section_name, property_name)
@@ -78,6 +146,15 @@ class TemplateConfigSection(object):
         return ret
 
     def _get_list_property(self, property_name, default_value=None, required=False):
+        """
+        Returns a list of values for the specified property (converts comma delimited list to
+        Python list)
+
+        :param property_name: The property name
+        :param default_value: The default value
+        :param required: If the value is required
+        :return: A list of values corresponding to the specified property
+        """
         list_items = []
         list_str = self._get_property(property_name)
         if list_str is not None:
@@ -99,29 +176,53 @@ class TemplateConfigSection(object):
 
 
 class TemplateConfig(object):
+    """
+    The configuration settings for a template
+    """
 
     def __init__(self, config):
+        """
+        Constructs the configuration
+
+        :param config: The wrapped Python configuration object
+        """
         self._config = config
 
     @property
     def config(self):
+        """
+        Returns the wrapped Python configuration object
+
+        :return: The wrapped Python configuration object
+        """
         return self._config
 
 
 class Template(object):
+    """
+    A template type that is used to determine what will be generated (application template vs.
+    client wrapper template, etc.)
+    """
     __metaclass__ = ABCMeta
 
     def __init__(self, package):
         """
+        Constructs the template
+
+        :param package The package associated with the template (used to derive static resources, etc.)
         """
         self._package = package
         self._template_config = None
 
-    @abstractproperty
-    def name(self):
-        pass
-
     def get_static_resource(self, resource_name, replace_dict=None, package=None):
+        """
+        Returns a populated static resource (reads resource, performs replacements, returns)
+
+        :param resource_name: The name of the resource
+        :param replace_dict: The dictionary for performing replacements
+        :param package: The package used to resolve the resource name (relative to the package)
+        :return: The populated static resource
+        """
         if package is None:
             package = self._package
 
@@ -146,21 +247,51 @@ class Template(object):
 
     @abstractmethod
     def _create_template_config(self, config):
+        """
+        Creates and returns a template-specific configuration from the Python configuration
+
+        :param config: The Python configuration
+        :return: A template-specific configuration
+        """
         pass
 
     @abstractmethod
     def _get_root_component(self, context):
+        """
+        Returns the root component for the template generation
+
+        :param context: The template context
+        :return: The root component for the template generation
+        """
         pass
 
     def _do_run(self, context):
+        """
+        Invoked when the template is being executed (for the purpose of generating output)
+
+        :param context: The template context
+        """
+        # Validate (determine errors prior to writing files, etc.)
         self._get_root_component(context).execute(context, validate_only=True)
+        # Execute
         self._get_root_component(context).execute(context, validate_only=False)
 
     @property
     def template_config(self):
+        """
+        Returns the template-specific configuration
+
+        :return: The template-specific configuration
+        """
         return self._template_config
 
     def run(self, config, dest_folder):
+        """
+        Executes the template (for the purpose of generating output)
+
+        :param config: The template context
+        :param dest_folder: The root folder in which to write the output of the generation
+        """
         self._template_config = self._create_template_config(config)
 
         context = TemplateContext(self)

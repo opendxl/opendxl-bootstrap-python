@@ -20,23 +20,24 @@ class DxlBootstrap(object):
     application which exposes services, etc.).
     """
 
-    # The list of available templates
-    _TEMPLATES = [
-        AppTemplate()
-    ]
+    # The list of template factories by name
+    _TEMPLATES = {
+        AppTemplate.get_name(): AppTemplate.new_instance
+    }
 
     def __init__(self):
         """
+        Constructs the application
         """
-        self._templates = {}
-        for template in DxlBootstrap._TEMPLATES:
-            self._templates[template.name] = template
+        pass
 
     @staticmethod
     def _load_configuration(config_file):
         """
-        :param config_file:
-        :return:
+        Loads and returns the configuration for the template that is being used
+
+        :param config_file: The configuration file path
+        :return: The configuration for the template that is being used
         """
         config = ConfigParser()
         read_files = config.read(config_file)
@@ -48,16 +49,17 @@ class DxlBootstrap(object):
 
     def run(self, template_name, config_file, dest_folder):
         """
-        :param template_name:
-        :param config_file:
-        :param dest_folder:
-        :return:
+        Runs the bootstrap application
+
+        :param template_name: The name of the template to use for the generation
+        :param config_file: The configuration file for the specified template
+        :param dest_folder: The output directory for the generation
         """
         try:
-            if template_name not in self._templates:
+            if template_name not in self._TEMPLATES:
                 raise Exception("An unknown template name was specified '{0}'".format(template_name))
 
-            template = self._templates[template_name]
+            template = self._TEMPLATES[template_name]()
             template.run(self._load_configuration(config_file), dest_folder)
             print "Generation succeeded."
         except Exception as e:

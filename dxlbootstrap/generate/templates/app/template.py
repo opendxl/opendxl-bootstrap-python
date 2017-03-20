@@ -87,6 +87,14 @@ class AppTemplateConfig(TemplateConfig):
 
 class AppTemplate(Template):
 
+    @staticmethod
+    def get_name():
+        return "application-template"
+
+    @staticmethod
+    def new_instance():
+        return AppTemplate()
+
     def __init__(self):
         super(AppTemplate, self).__init__(__name__)
 
@@ -384,7 +392,3 @@ class AppTemplate(Template):
         self._build_services(context, components_dict)
 
         return components_dict["root"]
-
-    @property
-    def name(self):
-        return "application-template"

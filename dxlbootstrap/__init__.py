@@ -10,9 +10,9 @@ __version__ = "0.1.0"
 
 def get_version():
     """
-    Returns the version of the McAfee DXL Bootstrap Application
+    Returns the version of the DXL Bootstrap Application
 
-    :return: The version of the McAfee DXL Bootstrap Application
+    :return: The version of the DXL Bootstrap Application
     """
     return __version__
 

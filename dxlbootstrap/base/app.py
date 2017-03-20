@@ -15,28 +15,48 @@ logger = logging.getLogger(__name__)
 
 
 class _ThreadedEventCallback(EventCallback):
-
+    """
+    Callback wrapper that invokes the wrapped event callback via the specified thread pool
+    """
     def __init__(self, callbacks_pool, callback):
+        """
+        Constructs the callback wrapper
+        :param callbacks_pool: The thread pool used to invoke the wrappers
+        :param callback: The callback to invoke
+        """
         super(_ThreadedEventCallback, self).__init__()
         self._delegate = callback
         self._callbacks_pool = callbacks_pool
 
     def on_event(self, event):
+        """
+        Invoked when a DXL event message is received
+        :param event: The DXL event message
+        """
         self._callbacks_pool.add_task(self._delegate.on_event, event)
 
 
 class _ThreadedRequestCallback(RequestCallback):
-
+    """
+    Callback wrapper that invokes the wrapped request callback via the specified thread pool
+    """
     def __init__(self, callbacks_pool, callback):
         super(_ThreadedRequestCallback, self).__init__()
         self._delegate = callback
         self._callbacks_pool = callbacks_pool
 
     def on_request(self, request):
+        """
+        Invoked when a DXL request message is received
+        :param request: The DXL request message
+        """
         self._callbacks_pool.add_task(self._delegate.on_request, request)
 
 
 class Application(object):
+    """
+    Base class used for DXL applications.
+    """
     __metaclass__ = ABCMeta
 
     # The name of the DXL client configuration file
@@ -49,6 +69,7 @@ class Application(object):
     INCOMING_MESSAGE_POOL_CONFIG_SECTION = "IncomingMessagePool"
     # The name of the "MessageCallbackPool" section within the configuration file
     MESSAGE_CALLBACK_POOL_CONFIG_SECTION = "MessageCallbackPool"
+
     # The property used to specify a queue size
     QUEUE_SIZE_CONFIG_PROP = "queueSize"
     # The property used to specify a thread count
@@ -60,6 +81,12 @@ class Application(object):
     DEFAULT_QUEUE_SIZE = 1000
 
     def __init__(self, config_dir, app_config_file_name):
+        """
+        Constructs the application
+
+        :param config_dir: The directory containing the application configuration files
+        :param app_config_file_name: The name of the application-specific configuration file
+        """
         self._config_dir = config_dir
         self._dxlclient_config_path = os.path.join(config_dir, self.DXL_CLIENT_CONFIG_FILE)
         self._app_config_path = os.path.join(config_dir, app_config_file_name)
@@ -94,7 +121,7 @@ class Application(object):
 
     def _validate_config_files(self):
         """
-        Validates the configuration files necessary for the ePO service. An exception is thrown
+        Validates the configuration files necessary for the application. An exception is thrown
         if any of the required files are inaccessible.
         """
         if not os.access(self._dxlclient_config_path, os.R_OK):
@@ -108,7 +135,7 @@ class Application(object):
 
     def _load_configuration(self):
         """
-        Loads the configuration settings from the ePO service configuration file
+        Loads the configuration settings from the application-specific configuration file
         """
         config = ConfigParser()
         self._config = config
@@ -153,6 +180,9 @@ class Application(object):
         self.on_load_configuration(config)
 
     def _dxl_connect(self):
+        """
+        Attempts to connect to the DXL fabric
+        """
         # Connect to fabric
         config = DxlClientConfig.create_dxl_config_from_file(self._dxlclient_config_path)
         config.incoming_message_thread_pool_size = self._incoming_thread_count
@@ -173,6 +203,9 @@ class Application(object):
         self.on_dxl_connect()
 
     def run(self):
+        """
+        Runs the application
+        """
         with self._lock:
             if self._running:
                 raise Exception("The application is already running")
@@ -186,6 +219,9 @@ class Application(object):
             self._dxl_connect()
 
     def destroy(self):
+        """
+        Destroys the application (disconnects from fabric, frees resources, etc.)
+        """
         with self._lock:
             if self._running and not self._destroyed:
                 logger.info("Destroying application ...")
@@ -211,10 +247,18 @@ class Application(object):
         return in_path
 
     def _unregister_services(self):
+        """
+        Unregisters the services associated with the Application from the fabric
+        """
         for service in self._services:
             self._dxl_client.unregister_service_sync(service, self.DXL_SERVICE_REGISTRATION_TIMEOUT)
 
     def _get_callbacks_pool(self):
+        """
+        Returns the thread pool used to invoke application-specific message callbacks
+
+        :return: The thread pool used to invoke application-specific message callbacks
+        """
         with self._lock:
             if self._callbacks_pool is None:
                 self._callbacks_pool = ThreadPool(self._callbacks_queue_size,
@@ -223,33 +267,73 @@ class Application(object):
             return self._callbacks_pool
 
     def add_event_callback(self, topic, callback, separate_thread):
+        """
+        Adds a DXL event message callback to the application.
+
+        :param topic: The topic to associate with the callback
+        :param callback: The event callback
+        :param separate_thread: Whether to invoke the callback on a thread other than the incoming message
+            thread (this is necessary if synchronous requests are made via DXL in this callback).
+        """
         if separate_thread:
             callback = _ThreadedEventCallback(self._get_callbacks_pool(), callback)
         self._dxl_client.add_event_callback(topic, callback)
 
     def add_request_callback(self, service, topic, callback, separate_thread):
+        """
+        Adds a DXL request message callback to the application.
+
+        :param service: The service to associate the request callback with
+        :param topic: The topic to associate with the callback
+        :param callback: The request callback
+        :param separate_thread: Whether to invoke the callback on a thread other than the incoming message
+            thread (this is necessary if synchronous requests are made via DXL in this callback).
+        """
         if separate_thread:
             callback = _ThreadedRequestCallback(self._get_callbacks_pool(), callback)
         service.add_topic(topic, callback)
 
     def register_service(self, service):
+        """
+        Registers the specified service with the fabric
+
+        :param service: The service to register with the fabric
+        """
         self._dxl_client.register_service_sync(service, self.DXL_SERVICE_REGISTRATION_TIMEOUT)
         self._services.append(service)
 
     @abstractmethod
     def on_run(self):
+        """
+        Invoked when the application start running
+        """
         pass
 
     @abstractmethod
     def on_load_configuration(self, config):
+        """
+        Invoked after the application-specific configuration has been loaded
+
+        :param config: The application-specific configuration
+        """
+        pass
         pass
 
     @abstractmethod
     def on_dxl_connect(self):
+        """
+        Invoked after the application has connected to the DXL fabric
+        """
         pass
 
     def register_event_handlers(self):
+        """
+        Invoked when event handlers should be registered with the application
+        """
         pass
 
     def register_services(self):
+        """
+        Invoked when services should be registered with the application
+        """
         pass
