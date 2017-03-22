@@ -1,0 +1,16 @@
+${additionalImports}from dxlbootstrap.client import Client
+
+
+class ${clientClassName}(Client):
+    """
+    The "${fullName}" client wrapper class.
+    """
+
+    def __init__(self, dxl_client):
+        """
+        Constructor parameters:
+
+        :param dxl_client: The DXL client to use for communication with the fabric
+        """
+        super(${clientClassName}, self).__init__(dxl_client)
+

@@ -1,5 +1,5 @@
 # Send event that will trigger event callback '${callbackName}'
 evt = Event("${topic}")
-evt.payload = "${callbackName} event payload".encode("utf-8")
+MessageUtils.encode_payload(evt, "${callbackName} event payload")
 client.send_event(evt)
 

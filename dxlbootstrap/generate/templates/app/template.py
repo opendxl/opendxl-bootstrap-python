@@ -1,5 +1,7 @@
-from dxlbootstrap.generate.core.template import Template, TemplateConfig, TemplateConfigSection
-from dxlbootstrap.generate.core.component import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
+from dxlbootstrap.generate.core.template \
+    import Template, TemplateConfig, TemplateConfigSection, PythonPackageConfigSection
+from dxlbootstrap.generate.core.component \
+    import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
 from dxlbootstrap import get_version
 
 
@@ -23,7 +25,7 @@ class AppTemplateConfig(TemplateConfig):
 
         :return: The "application" section of the configuration
         """
-        class ApplicationConfigSection(TemplateConfigSection):
+        class ApplicationConfigSection(PythonPackageConfigSection):
             """
             Configuration section for the "application"
             """
@@ -37,24 +39,6 @@ class AppTemplateConfig(TemplateConfig):
                 super(ApplicationConfigSection, self).__init__(template_config, "Application")
 
             @property
-            def name(self):
-                """
-                Returns the name of the application (used for the Python package name, etc.)
-
-                :return: The name of the application (used for the Python package name, etc.)
-                """
-                return self._get_property("name", required=True)
-
-            @property
-            def full_name(self):
-                """
-                Returns the "full name" (human readable name) for the application
-
-                :return: The "full name" (human readable name) for the application
-                """
-                return self._get_property("fullName", required=True)
-
-            @property
             def app_class_name(self):
                 """
                 Returns the name for the "application" Python class
@@ -62,15 +46,6 @@ class AppTemplateConfig(TemplateConfig):
                 :return: The name for the "application" Python class
                 """
                 return self._get_property("appClassName", required=True)
-
-            @property
-            def copyright(self):
-                """
-                Returns the "copyright" for the application
-
-                :return: The "copyright" for the application
-                """
-                return self._get_property("copyright", required=False, default_value="")
 
             @property
             def event_handlers(self):
@@ -90,17 +65,13 @@ class AppTemplateConfig(TemplateConfig):
                 """
                 return self._get_list_property("services", required=False, default_value=[])
 
-            @property
-            def install_requires(self):
+            def _get_install_requires_list(self):
                 """
-                Returns a list containing the Python packages that the application requires
+                Returns the list of package names that the install requires
 
-                :return: A list containing the Python packages that the application requires
+                :return: The list of package names that the install requires
                 """
-                reqs = self._get_list_property("installRequires", required=False, default_value=[])[:]
-                reqs.insert(0, "dxlbootstrap=={0}".format(get_version()))
-                reqs.insert(0, "dxlclient")
-                return reqs
+                return ["dxlbootstrap=={0}".format(get_version()), "dxlclient"]
 
         return ApplicationConfigSection(self)
 
@@ -207,7 +178,7 @@ class AppTemplateConfig(TemplateConfig):
 
 class AppTemplate(Template):
     """
-    Template which is used to generate a DXL "application". An application runs persistently and can
+    Template which is used to generate an OpenDXL "application". An application runs persistently and can
     listen for DXL events and/or register DXL services.
     """
 
@@ -245,38 +216,6 @@ class AppTemplate(Template):
         return AppTemplateConfig(config)
 
     @staticmethod
-    def create_underline(length, char):
-        """
-        Used to create an underline of the specified character.
-
-        For example: "========="
-
-        :param length: The length of the underline
-        :param char: The character to use
-        :return: An underline
-        """
-        ret = ""
-        for x in range(0, length):
-            ret += char
-        return ret
-
-    @staticmethod
-    def create_install_requires(config):
-        """
-        Used to create the text content for the "install requires" portion of the Python
-        setup.py file
-
-        :param config: The application configuration
-        :return: The text content for the "install requires" portion of the Python setup.py file
-        """
-        ret = ""
-        first = True
-        for req in config.application_section.install_requires:
-            ret += "{1}\n        \"{0}\"".format(req, ("" if first else ","))
-            first = False
-        return ret
-
-    @staticmethod
     def create_pip_install(config):
         """
         Used to create the text content for "RUN pip install..." lines within the Dockerfile
@@ -300,25 +239,27 @@ class AppTemplate(Template):
         :return: The "root" directory components of the output
         """
         config = context.template.template_config
+        app_section = config.application_section
 
         root = DirTemplateComponent("")
         components_dict["root"] = root
 
         file_comp = FileTemplateComponent("README", "README.tmpl",
-                                          {"fullName": config.application_section.full_name,
+                                          {"fullName": app_section.full_name,
                                            "fullNameSep":
-                                               self.create_underline(len(config.application_section.full_name), "="),
-                                           "copyright": config.application_section.copyright})
+                                               self.create_underline(len(app_section.full_name), "="),
+                                           "copyright": app_section.copyright})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("README.md", "README.md.tmpl",
-                                          {"fullName": config.application_section.full_name,
-                                           "copyright": config.application_section.copyright})
+                                          {"fullName": app_section.full_name,
+                                           "copyright": app_section.copyright})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("setup.py", "setup.py.tmpl",
-                                          {"name": config.application_section.name,
-                                           "installRequires": self.create_install_requires(config)})
+                                          {"name": app_section.name,
+                                           "installRequires": self.create_install_requires(
+                                               app_section.install_requires)})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("LICENSE", "LICENSE.tmpl")
@@ -328,15 +269,16 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
-                                          {"name": config.application_section.name})
+                                          {"name": app_section.name})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("Dockerfile", "Dockerfile.tmpl",
-                                          {"name": config.application_section.name,
+                                          {"name": app_section.name,
                                            "pipInstall": self.create_pip_install(config)})
         root.add_child(file_comp)
 
-    def _build_config_directory(self, context, components_dict):
+    @staticmethod
+    def _build_config_directory(context, components_dict):
         """
         Builds the "config" directory components of the output
 
@@ -345,6 +287,7 @@ class AppTemplate(Template):
         :return: The "config" directory components of the output
         """
         config = context.template.template_config
+        app_section = config.application_section
         root = components_dict["root"]
 
         config_dir = DirTemplateComponent("config")
@@ -356,11 +299,12 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
         config_dir.add_child(file_comp)
 
-        file_comp = FileTemplateComponent(config.application_section.name + ".config", "config/app.config.tmpl",
-                                          {"fullName": config.application_section.full_name})
+        file_comp = FileTemplateComponent(app_section.name + ".config", "config/app.config.tmpl",
+                                          {"fullName": app_section.full_name})
         config_dir.add_child(file_comp)
 
-    def _build_sample_directory(self, context, components_dict):
+    @staticmethod
+    def _build_sample_directory(context, components_dict):
         """
         Builds the "sample" directory components of the output
 
@@ -396,52 +340,54 @@ class AppTemplate(Template):
         :return: The "docs" directory components of the output
         """
         config = context.template.template_config
+        app_section = config.application_section
         root = components_dict["root"]
 
         doc_dir = DirTemplateComponent("doc")
         root.add_child(doc_dir)
 
         file_comp = FileTemplateComponent("conf.py", "doc/conf.py.tmpl",
-                                          {"copyright": config.application_section.copyright,
-                                           "fullName": config.application_section.full_name,
-                                           "name": config.application_section.name})
+                                          {"copyright": app_section.copyright,
+                                           "fullName": app_section.full_name,
+                                           "name": app_section.name})
         doc_dir.add_child(file_comp)
 
         sdk_dir = DirTemplateComponent("sdk")
         doc_dir.add_child(sdk_dir)
 
         file_comp = FileTemplateComponent("index.rst", "doc/sdk/index.rst.tmpl",
-                                          {"fullName": config.application_section.full_name,
+                                          {"fullName": app_section.full_name,
                                            "fullNameSep":
-                                               self.create_underline(len(config.application_section.full_name), "="),
-                                           "name": config.application_section.name})
+                                               self.create_underline(len(app_section.full_name), "="),
+                                           "name": app_section.name})
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("README.html", "doc/sdk/README.html.tmpl",
-                                          {"copyright": config.application_section.copyright,
-                                           "fullName": config.application_section.full_name})
+                                          {"copyright": app_section.copyright,
+                                           "fullName": app_section.full_name})
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("overview.rst", "doc/sdk/overview.rst.tmpl")
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("installation.rst", "doc/sdk/installation.rst.tmpl",
-                                          {"name": config.application_section.name})
+                                          {"name": app_section.name})
         sdk_dir.add_child(file_comp)
 
-        config_title = "{0} ({1}.config)".format(config.application_section.full_name, config.application_section.name)
+        config_title = "{0} ({1}.config)".format(app_section.full_name, app_section.name)
         file_comp = FileTemplateComponent("configuration.rst", "doc/sdk/configuration.rst.tmpl",
-                                          {"fullName": config.application_section.full_name,
-                                           "name": config.application_section.name,
+                                          {"fullName": app_section.full_name,
+                                           "name": app_section.name,
                                            "configTitle": config_title,
                                            "configTitleSep": self.create_underline(len(config_title), "-")})
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("sampleconfig.rst", "doc/sdk/sampleconfig.rst.tmpl",
-                                          {"fullName": config.application_section.full_name})
+                                          {"fullName": app_section.full_name})
         sdk_dir.add_child(file_comp)
 
-    def _build_application_directory(self, context, components_dict):
+    @staticmethod
+    def _build_application_directory(context, components_dict):
         """
         Builds the application directory components of the output
 
@@ -467,31 +413,34 @@ class AppTemplate(Template):
             return ret
 
         config = context.template.template_config
+        app_section = config.application_section
         root = components_dict["root"]
 
-        app_dir = DirTemplateComponent(config.application_section.name)
+        app_dir = DirTemplateComponent(app_section.name)
         root.add_child(app_dir)
         components_dict["app_dir"] = app_dir
 
         file_comp = FileTemplateComponent("__init__.py", "app/__init__.py.tmpl",
-                                          {"appClassName": config.application_section.app_class_name})
+                                          {"appClassName": app_section.app_class_name,
+                                           "relPackage": ".app"})
         app_dir.add_child(file_comp)
 
         app_file_comp = FileTemplateComponent("app.py", "app/app.py.tmpl",
-                                              {"appClassName": config.application_section.app_class_name,
-                                               "name": config.application_section.name,
-                                               "fullName": config.application_section.full_name,
+                                              {"appClassName": app_section.app_class_name,
+                                               "name": app_section.name,
+                                               "fullName": app_section.full_name,
                                                "additionalImports": _get_additional_imports})
         components_dict["app_file_comp"] = app_file_comp
 
         app_dir.add_child(app_file_comp)
 
         file_comp = FileTemplateComponent("__main__.py", "app/__main__.py.tmpl",
-                                          {"appClassName": config.application_section.app_class_name,
-                                           "name": config.application_section.name})
+                                          {"appClassName": app_section.app_class_name,
+                                           "name": app_section.name})
         app_dir.add_child(file_comp)
 
-    def _build_event_handlers(self, context, components_dict):
+    @staticmethod
+    def _build_event_handlers(context, components_dict):
         """
         Builds the event handlers for the application
 
@@ -499,12 +448,13 @@ class AppTemplate(Template):
         :param components_dict: Dictionary containing components by name (and other info)
         """
         config = context.template.template_config
+        app_section = config.application_section
 
         basic_sample_comp = components_dict["basic_sample_comp"]
         app_file_comp = components_dict["app_file_comp"]
         app_dir = components_dict["app_dir"]
 
-        event_handlers = config.application_section.event_handlers
+        event_handlers = app_section.event_handlers
         if len(event_handlers) > 0:
             components_dict["has_events"] = True
             register_event_handler_def_comp = CodeTemplateComponent("app/code/register_event_handler_def.code.tmpl")
@@ -519,7 +469,7 @@ class AppTemplate(Template):
                 code_comp = CodeTemplateComponent("app/code/events_event_callback.code.tmpl",
                                                   {"className": handler_section.class_name,
                                                    "name": handler_name,
-                                                   "topic" : handler_section.topic})
+                                                   "topic": handler_section.topic})
                 file_comp.add_child(code_comp)
 
                 code_comp = CodeTemplateComponent("app/code/register_event_handler.code.tmpl",
@@ -536,7 +486,8 @@ class AppTemplate(Template):
                 event_code_comp.indent_level = 1
                 basic_sample_comp.add_child(event_code_comp)
 
-    def _build_services(self, context, components_dict):
+    @staticmethod
+    def _build_services(context, components_dict):
         """
         Builds the services exposed by the application
 
@@ -544,12 +495,13 @@ class AppTemplate(Template):
         :param components_dict: Dictionary containing components by name (and other info)
         """
         config = context.template.template_config
+        app_section = config.application_section
 
         basic_sample_comp = components_dict["basic_sample_comp"]
         app_file_comp = components_dict["app_file_comp"]
         app_dir = components_dict["app_dir"]
 
-        service_names = config.application_section.services
+        service_names = app_section.services
         requests_file_comp = None
         if len(service_names) > 0:
             components_dict["has_services"] = True

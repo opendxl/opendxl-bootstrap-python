@@ -6,12 +6,15 @@
 import logging
 import sys
 
-from .app import DxlBootstrap
+from .generate.app import DxlBootstrap
 
 # Validate command line
 arg_count = len(sys.argv)
 if arg_count < 3:
-    print "Usage: dxlbootstrap <template-name> <config-file> [output-directory]"
+    print "Usage: dxlbootstrap <template-name> <config-file> [output-directory]\n\n"
+    print "Supported templates:"
+    for name in sorted(DxlBootstrap.templates()):
+        print "    {0}".format(name)
     sys.exit(1)
 
 #

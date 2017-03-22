@@ -1,10 +1,10 @@
 # Send request that will trigger request callback '${name}'
 request_topic = "${topic}"
 req = Request(request_topic)
-req.payload = "${name} request payload".encode("utf-8")
+MessageUtils.encode_payload(req, "${name} request payload")
 res = client.sync_request(req)
 if res.message_type is not Message.MESSAGE_TYPE_ERROR:
-    print "Response for ${name}: '{0}'".format(res.payload.decode("utf-8"))
+    print "Response for ${name}: '{0}'".format(MessageUtils.decode_payload(res))
 else:
     print "Error invoking service with topic '{0}': {1} ({2})".format(
         request_topic, res.error_message, res.error_code)

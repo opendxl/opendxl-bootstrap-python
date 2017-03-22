@@ -30,7 +30,6 @@ dist = setup(
     # Packages
     packages=[
         "dxlbootstrap",
-        "dxlbootstrap.base",
         "dxlbootstrap.generate",
         "dxlbootstrap.generate.core",
         "dxlbootstrap.generate.templates",
@@ -43,7 +42,16 @@ dist = setup(
         "dxlbootstrap.generate.templates.app.static.doc.sdk",
         "dxlbootstrap.generate.templates.app.static.sample",
         "dxlbootstrap.generate.templates.app.static.sample.basic",
-        "dxlbootstrap.generate.templates.app.static.sample.basic.code"
+        "dxlbootstrap.generate.templates.app.static.sample.basic.code",
+        "dxlbootstrap.generate.templates.client",
+        "dxlbootstrap.generate.templates.client.static",
+        "dxlbootstrap.generate.templates.client.static.client",
+        "dxlbootstrap.generate.templates.client.static.client.code",
+        "dxlbootstrap.generate.templates.client.static.sample",
+        "dxlbootstrap.generate.templates.client.static.sample.basic",
+        "dxlbootstrap.generate.templates.client.static.sample.basic.code",
+        "dxlbootstrap.generate.templates.client.static.doc",
+        "dxlbootstrap.generate.templates.client.static.doc.sdk"
     ],
 
     package_data={'': ['*.tmpl']},

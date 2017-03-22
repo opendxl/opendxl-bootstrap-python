@@ -9,7 +9,7 @@ setuptools.command.sdist.sdist.run = distutils.command.sdist.sdist.run
 VERSION = __import__('${name}').get_version()
 
 dist = setup(
-    # Application name:
+    # Package name:
     name="${name}",
 
     # Version number:
@@ -19,7 +19,7 @@ dist = setup(
     install_requires=[${installRequires}
     ],
 
-    # Application author details:
+    # Package author details:
     author="",
 
     # License

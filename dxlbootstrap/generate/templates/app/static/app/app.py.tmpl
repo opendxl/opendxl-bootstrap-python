@@ -1,6 +1,6 @@
 import logging
 
-from dxlbootstrap.base.app import Application${additionalImports}
+from dxlbootstrap.app import Application${additionalImports}
 
 # Configure local logger
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class ${appClassName}(Application):
 
     def on_load_configuration(self, config):
         """
-        Invoked after the configuration has been loaded.
+        Invoked after the application-specific configuration has been loaded
 
         This callback provides the opportunity for the application to parse
         additional configuration properties.

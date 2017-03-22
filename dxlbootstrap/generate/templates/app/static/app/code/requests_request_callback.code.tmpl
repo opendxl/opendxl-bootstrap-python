@@ -20,13 +20,13 @@ class ${className}(RequestCallback):
         """
         # Handle request
         logger.info("Request received on topic: '{0}' with payload: '{1}'".format(
-            request.destination_topic, request.payload.decode("utf-8")))
+            request.destination_topic, MessageUtils.decode_payload(request)))
 
         # Create response
         res = Response(request)
 
         # Set payload
-        res.payload = "${name} response payload".encode("utf-8")
+        MessageUtils.encode_payload(res, "${name} response payload")
 
         # Send response
         self._app.client.send_response(res)

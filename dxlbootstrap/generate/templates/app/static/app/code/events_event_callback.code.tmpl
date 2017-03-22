@@ -20,6 +20,6 @@ class ${className}(EventCallback):
         """
         # Handle event
         logger.info("Event received on topic: '{0}' with payload: '{1}'".format(
-            event.destination_topic, event.payload.decode("utf-8")))
+            event.destination_topic, MessageUtils.decode_payload(event)))
 
 
