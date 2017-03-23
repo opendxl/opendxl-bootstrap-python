@@ -407,9 +407,9 @@ class AppTemplate(Template):
                 ret += "\n"
                 if components_dict["has_services"]:
                     ret += "from dxlclient.service import ServiceRegistrationInfo\n"
-                    ret += "from requests import *\n"
+                    ret += "from requesthandlers import *\n"
                 if components_dict["has_events"]:
-                    ret += "from events import *\n"
+                    ret += "from eventhandlers import *\n"
             return ret
 
         config = context.template.template_config
@@ -461,7 +461,7 @@ class AppTemplate(Template):
             register_event_handler_def_comp.indent_level = 1
             app_file_comp.add_child(register_event_handler_def_comp)
 
-            file_comp = FileTemplateComponent("events.py", "app/events.py.tmpl")
+            file_comp = FileTemplateComponent("eventhandlers.py", "app/eventhandlers.py.tmpl")
             app_dir.add_child(file_comp)
 
             for handler_name in event_handlers:
@@ -521,7 +521,7 @@ class AppTemplate(Template):
                 for handler_name in request_handlers:
                     handler_section = config.get_request_handler_section(handler_name)
                     if requests_file_comp is None:
-                        requests_file_comp = FileTemplateComponent("requests.py", "app/requests.py.tmpl")
+                        requests_file_comp = FileTemplateComponent("requesthandlers.py", "app/requesthandlers.py.tmpl")
                         app_dir.add_child(requests_file_comp)
                     code_comp = CodeTemplateComponent("app/code/requests_request_callback.code.tmpl",
                                                       {"className": handler_section.class_name,

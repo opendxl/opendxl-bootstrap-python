@@ -69,7 +69,7 @@ class MessageUtils(object):
         :param value: The value
         :param enc: The encoding to use
         """
-        message.payload = value.encode(encoding=enc)
+        message.payload = MessageUtils.encode(value, enc=enc)
 
     @staticmethod
     def decode_payload(message, enc="utf-8"):
@@ -80,4 +80,26 @@ class MessageUtils(object):
         :param enc: The encoding of the payload
         :return: The decoded value
         """
-        return message.payload.decode(encoding=enc)
+        return MessageUtils.decode(message.payload, enc=enc)
+
+    @staticmethod
+    def encode(value, enc="utf-8"):
+        """
+        Encodes the specified value and returns it
+
+        :param value: The value
+        :param enc: The encoding to use
+        :return: The encoded value
+        """
+        return value.encode(encoding=enc)
+
+    @staticmethod
+    def decode(value, enc="utf-8"):
+        """
+        Decodes the specified value and returns it.
+
+        :param value: The value
+        :param enc: The encoding
+        :return: The decoded value
+        """
+        return value.decode(encoding=enc)
