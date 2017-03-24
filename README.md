@@ -18,7 +18,7 @@ installation instructions and usage examples.
 
 To start using the OpenDXL Bootstrap Application:
 
-* Download the [Latest Release](https://github.com/opendxl/opendxl-bootstrap-python/latest)
+* Download the [Latest Release](https://github.com/opendxl/opendxl-bootstrap-python/releases/latest)
 * Extract the release .zip file
 * View the `README.html` file located at the root of the extracted files.
   * The `README` links to the documentation which includes installation instructions and usage examples.
