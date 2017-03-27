@@ -532,7 +532,8 @@ class AppTemplate(Template):
                     code_comp = CodeTemplateComponent("app/code/service_add_topic.code.tmpl",
                                                       {"topic": handler_section.topic,
                                                        "className": handler_section.class_name,
-                                                       "separateThread": handler_section.separate_thread})
+                                                       "separateThread": handler_section.separate_thread,
+                                                       "callbackName": handler_name})
                     code_comp.indent_level = 1
                     register_services_def_comp.add_child(code_comp)
 
