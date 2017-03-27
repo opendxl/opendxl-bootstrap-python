@@ -107,7 +107,7 @@ class DirTemplateComponent(TemplateComponent):
         if validate_only:
             return
 
-        if not os.path.exists(context.current_directory):
+        if context.current_directory and not os.path.exists(context.current_directory):
             os.makedirs(context.current_directory)
 
 

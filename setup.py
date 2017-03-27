@@ -17,6 +17,7 @@ dist = setup(
 
     # Requirements
     install_requires=[
+        "dxlclient"
     ],
 
     # Application author details:
