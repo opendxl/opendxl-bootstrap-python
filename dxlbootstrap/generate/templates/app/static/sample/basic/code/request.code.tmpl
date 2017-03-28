@@ -2,7 +2,7 @@
 request_topic = "${topic}"
 req = Request(request_topic)
 MessageUtils.encode_payload(req, "${name} request payload")
-res = client.sync_request(req)
+res = client.sync_request(req, timeout=30)
 if res.message_type is not Message.MESSAGE_TYPE_ERROR:
     print "Response for ${name}: '{0}'".format(MessageUtils.decode_payload(res))
 else:
