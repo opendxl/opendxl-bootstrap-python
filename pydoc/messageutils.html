@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Message Utilities &#8212; McAfee OpenDXL Bootstrap Application 0.0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Base Application" href="baseapplication.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="baseapplication.html" title="Base Application"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">McAfee OpenDXL Bootstrap Application 0.0.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="message-utilities">
+<h1>Message Utilities<a class="headerlink" href="#message-utilities" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dxlbootstrap.util.MessageUtils">
+<em class="property">class </em><code class="descclassname">dxlbootstrap.util.</code><code class="descname">MessageUtils</code><a class="headerlink" href="#dxlbootstrap.util.MessageUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Messaging related utility methods</p>
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.decode">
+<em class="property">static </em><code class="descname">decode</code><span class="sig-paren">(</span><em>value</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the specified value and returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> &#8211; The value</li>
+<li><strong>enc</strong> &#8211; The encoding</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The decoded value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.decode_payload">
+<em class="property">static </em><code class="descname">decode_payload</code><span class="sig-paren">(</span><em>message</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.decode_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the specified message&#8217;s payload and returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> &#8211; The DXL message</li>
+<li><strong>enc</strong> &#8211; The encoding of the payload</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The decoded value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.dict_to_json">
+<em class="property">static </em><code class="descname">dict_to_json</code><span class="sig-paren">(</span><em>dict</em>, <em>pretty_print=False</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.dict_to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the specified Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>) to a JSON string and
+returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict</strong> &#8211; The Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>)</li>
+<li><strong>pretty_print</strong> &#8211; Whether to pretty print the JSON</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The JSON string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.dict_to_json_payload">
+<em class="property">static </em><code class="descname">dict_to_json_payload</code><span class="sig-paren">(</span><em>message</em>, <em>dict</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.dict_to_json_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the specified Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>) to a JSON string and places
+it in the DXL message&#8217;s payload.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>message</strong> &#8211; The DXL message</li>
+<li><strong>dict</strong> &#8211; The Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>)</li>
+<li><strong>enc</strong> &#8211; The encoding to use for the payload</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.encode">
+<em class="property">static </em><code class="descname">encode</code><span class="sig-paren">(</span><em>value</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes the specified value and returns it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> &#8211; The value</li>
+<li><strong>enc</strong> &#8211; The encoding to use</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encoded value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.encode_payload">
+<em class="property">static </em><code class="descname">encode_payload</code><span class="sig-paren">(</span><em>message</em>, <em>value</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.encode_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes the specified value and places it in the DXL message&#8217;s payload</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>message</strong> &#8211; The DXL message</li>
+<li><strong>value</strong> &#8211; The value</li>
+<li><strong>enc</strong> &#8211; The encoding to use</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.json_payload_to_dict">
+<em class="property">static </em><code class="descname">json_payload_to_dict</code><span class="sig-paren">(</span><em>message</em>, <em>enc='utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.json_payload_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the specified message&#8217;s payload from JSON to a Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>)
+and returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> &#8211; The DXL message</li>
+<li><strong>enc</strong> &#8211; The encoding of the payload</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="dxlbootstrap.util.MessageUtils.json_to_dict">
+<em class="property">static </em><code class="descname">json_to_dict</code><span class="sig-paren">(</span><em>json_string</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.util.MessageUtils.json_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the specified JSON string to a Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>) and
+returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>json_string</strong> &#8211; The JSON string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The Python dictionary (<code class="docutils literal"><span class="pre">dict</span></code>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="baseapplication.html"
+                        title="previous chapter">Base Application</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/messageutils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="baseapplication.html" title="Base Application"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">McAfee OpenDXL Bootstrap Application 0.0.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, McAfee Inc.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>

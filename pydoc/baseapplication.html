@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Base Application &#8212; McAfee OpenDXL Bootstrap Application 0.0.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Message Utilities" href="messageutils.html" />
+    <link rel="prev" title="Base Client" href="baseclient.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="messageutils.html" title="Message Utilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="baseclient.html" title="Base Client"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">McAfee OpenDXL Bootstrap Application 0.0.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="base-application">
+<h1>Base Application<a class="headerlink" href="#base-application" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dxlbootstrap.app.Application">
+<em class="property">class </em><code class="descclassname">dxlbootstrap.app.</code><code class="descname">Application</code><span class="sig-paren">(</span><em>config_dir</em>, <em>app_config_file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class used for DXL applications.</p>
+<p>Constructs the application</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config_dir</strong> &#8211; The directory containing the application configuration files</li>
+<li><strong>app_config_file_name</strong> &#8211; The name of the application-specific configuration file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.add_event_callback">
+<code class="descname">add_event_callback</code><span class="sig-paren">(</span><em>topic</em>, <em>callback</em>, <em>separate_thread</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.add_event_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a DXL event message callback to the application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>topic</strong> &#8211; The topic to associate with the callback</li>
+<li><strong>callback</strong> &#8211; The event callback</li>
+<li><strong>separate_thread</strong> &#8211; Whether to invoke the callback on a thread other than the incoming message
+thread (this is necessary if synchronous requests are made via DXL in this callback).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.add_request_callback">
+<code class="descname">add_request_callback</code><span class="sig-paren">(</span><em>service</em>, <em>topic</em>, <em>callback</em>, <em>separate_thread</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.add_request_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a DXL request message callback to the application.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>service</strong> &#8211; The service to associate the request callback with</li>
+<li><strong>topic</strong> &#8211; The topic to associate with the callback</li>
+<li><strong>callback</strong> &#8211; The request callback</li>
+<li><strong>separate_thread</strong> &#8211; Whether to invoke the callback on a thread other than the incoming message
+thread (this is necessary if synchronous requests are made via DXL in this callback).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroys the application (disconnects from fabric, frees resources, etc.)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.on_dxl_connect">
+<code class="descname">on_dxl_connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.on_dxl_connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked after the client associated with the application has connected
+to the DXL fabric.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.on_load_configuration">
+<code class="descname">on_load_configuration</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.on_load_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked after the application-specific configuration has been loaded</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> &#8211; The application-specific configuration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.on_register_event_handlers">
+<code class="descname">on_register_event_handlers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.on_register_event_handlers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when event handlers should be registered with the application</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.on_register_services">
+<code class="descname">on_register_services</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.on_register_services" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when services should be registered with the application</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.on_run">
+<code class="descname">on_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.on_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoked when the application has started running.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.register_service">
+<code class="descname">register_service</code><span class="sig-paren">(</span><em>service</em><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.register_service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers the specified service with the fabric</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>service</strong> &#8211; The service to register with the fabric</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dxlbootstrap.app.Application.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dxlbootstrap.app.Application.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs the application</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="baseclient.html"
+                        title="previous chapter">Base Client</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="messageutils.html"
+                        title="next chapter">Message Utilities</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/baseapplication.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="messageutils.html" title="Message Utilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="baseclient.html" title="Base Client"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">McAfee OpenDXL Bootstrap Application 0.0.3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, McAfee Inc.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.
+    </div>
+  </body>
+</html>
