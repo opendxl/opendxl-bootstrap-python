@@ -149,6 +149,9 @@ class ClientTemplate(Template):
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
                                           {"name": client_section.name})
         root.add_child(file_comp)
+        file_comp = FileTemplateComponent("clean.py", "../../app/static/clean.py.tmpl",
+                                          {"name": client_section.name})
+        root.add_child(file_comp)
 
     @staticmethod
     def _build_client_directory(context, components_dict):
@@ -206,6 +209,8 @@ class ClientTemplate(Template):
         root.add_child(sample_dir)
 
         file_comp = FileTemplateComponent("dxlclient.config", "../../app/static/config/dxlclient.config.tmpl")
+        sample_dir.add_child(file_comp)
+        file_comp = FileTemplateComponent("dxlclient.config.dist", "../../app/static/config/dxlclient.config.tmpl")
         sample_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("common.py", "../../app/static/sample/common.py.tmpl")

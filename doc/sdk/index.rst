@@ -45,8 +45,8 @@ Templates
 * `Application Template <https://github.com/opendxl/opendxl-bootstrap-python/wiki/Application-Template>`_
 * `Client Template <https://github.com/opendxl/opendxl-bootstrap-python/wiki/Client-Template>`_
 
-Supporting Classes and Methods
-------------------------------
+Supporting Classes
+------------------
 
 .. toctree::
     :titlesonly:

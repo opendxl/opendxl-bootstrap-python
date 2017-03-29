@@ -272,6 +272,10 @@ class AppTemplate(Template):
                                           {"name": app_section.name})
         root.add_child(file_comp)
 
+        file_comp = FileTemplateComponent("clean.py", "clean.py.tmpl",
+                                          {"name": app_section.name})
+        root.add_child(file_comp)
+
         file_comp = FileTemplateComponent("Dockerfile", "Dockerfile.tmpl",
                                           {"name": app_section.name,
                                            "pipInstall": self.create_pip_install(config)})
@@ -295,11 +299,16 @@ class AppTemplate(Template):
 
         file_comp = FileTemplateComponent("logging.config", "config/logging.config.tmpl")
         config_dir.add_child(file_comp)
-
+        file_comp = FileTemplateComponent("logging.config.dist", "config/logging.config.tmpl")
+        config_dir.add_child(file_comp)
         file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
         config_dir.add_child(file_comp)
-
+        file_comp = FileTemplateComponent("dxlclient.config.dist", "config/dxlclient.config.tmpl")
+        config_dir.add_child(file_comp)
         file_comp = FileTemplateComponent(app_section.name + ".config", "config/app.config.tmpl",
+                                          {"fullName": app_section.full_name})
+        config_dir.add_child(file_comp)
+        file_comp = FileTemplateComponent(app_section.name + ".config.dist", "config/app.config.tmpl",
                                           {"fullName": app_section.full_name})
         config_dir.add_child(file_comp)
 
@@ -319,6 +328,8 @@ class AppTemplate(Template):
         root.add_child(sample_dir)
 
         file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
+        sample_dir.add_child(file_comp)
+        file_comp = FileTemplateComponent("dxlclient.config.dist", "config/dxlclient.config.tmpl")
         sample_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("common.py", "sample/common.py.tmpl")

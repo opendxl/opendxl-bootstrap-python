@@ -6,6 +6,10 @@ Prerequisites
 
 * Python 2.7.9 or higher installed within a Windows or Linux environment (Python 3 is not supported at this time)
 
+* The OpenDXL Python Client prerequisites must be satisfied
+
+    * https://opendxl.github.io/opendxl-client-python/pydoc/installation.html
+
 Installation
 ************
 
