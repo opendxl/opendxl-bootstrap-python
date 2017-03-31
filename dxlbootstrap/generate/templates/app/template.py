@@ -384,6 +384,10 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("installation.rst", "doc/sdk/installation.rst.tmpl",
                                           {"name": app_section.name})
         sdk_dir.add_child(file_comp)
+        file_comp = FileTemplateComponent("running.rst", "doc/sdk/running.rst.tmpl",
+                                          {"name": app_section.name})
+        sdk_dir.add_child(file_comp)
+
 
         config_title = "{0} ({1}.config)".format(app_section.full_name, app_section.name)
         file_comp = FileTemplateComponent("configuration.rst", "doc/sdk/configuration.rst.tmpl",
