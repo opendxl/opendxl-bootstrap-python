@@ -4,12 +4,17 @@ FROM python:2.7-alpine
 # Install required packages
 ${pipInstall}
 
-# Build service
+# Copy application files
 COPY . /tmp/build
 WORKDIR /tmp/build
+
+# Clean application
+RUN python ./clean.py
+
+# Build application
 RUN python ./setup.py bdist_wheel
 
-# Install service
+# Install application
 RUN pip install dist/*.whl
 
 # Cleanup build
