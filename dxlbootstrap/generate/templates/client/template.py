@@ -176,6 +176,11 @@ class ClientTemplate(Template):
                                            "relPackage": ".client"})
         client_dir.add_child(file_comp)
 
+        file_comp = FileTemplateComponent("_version.py", "../../app/static/app/_version.py.tmpl",
+                                          {"appClassName": client_section.client_class_name,
+                                           "relPackage": ".client"})
+        client_dir.add_child(file_comp)
+
         include_example = client_section.include_example_method
         file_comp = FileTemplateComponent("client.py", "client/client.py.tmpl",
                                           {"clientClassName": client_section.client_class_name,

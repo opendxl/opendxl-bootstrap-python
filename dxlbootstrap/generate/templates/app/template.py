@@ -226,8 +226,11 @@ class AppTemplate(Template):
         ret = ""
         first = True
         for req in config.application_section.install_requires:
-            ret += "{1}RUN pip install \"{0}\"".format(req, ("" if first else "\n"))
+            if first:
+                ret += "RUN pip install"
+            ret += "{0} \"{1}\"".format(("" if first else ","), req)
             first = False
+
         return ret
 
     def _build_root_directory(self, context, components_dict):
@@ -436,6 +439,11 @@ class AppTemplate(Template):
         components_dict["app_dir"] = app_dir
 
         file_comp = FileTemplateComponent("__init__.py", "app/__init__.py.tmpl",
+                                          {"appClassName": app_section.app_class_name,
+                                           "relPackage": ".app"})
+        app_dir.add_child(file_comp)
+
+        file_comp = FileTemplateComponent("_version.py", "app/_version.py.tmpl",
                                           {"appClassName": app_section.app_class_name,
                                            "relPackage": ".app"})
         app_dir.add_child(file_comp)
