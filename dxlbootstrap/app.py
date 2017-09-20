@@ -1,3 +1,5 @@
+import shutil
+import pkg_resources
 import logging
 import os
 
@@ -60,6 +62,9 @@ class Application(object):
     # The name of the DXL client configuration file
     DXL_CLIENT_CONFIG_FILE = "dxlclient.config"
 
+    # The location of the logging configuration file (optional)
+    LOGGING_CONFIG_FILE = "logging.config"
+
     # The timeout used when registering/unregistering the service
     DXL_SERVICE_REGISTRATION_TIMEOUT = 60
 
@@ -77,6 +82,11 @@ class Application(object):
     DEFAULT_THREAD_COUNT = 10
     # The default queue size for the incoming message pool
     DEFAULT_QUEUE_SIZE = 1000
+
+    # The directory containing the configuration files (in the Python library)
+    LIB_CONFIG_DIR = "_config"
+    # The directory containing the application configuration files (in the Python library)
+    LIB_APP_CONFIG_DIR = LIB_CONFIG_DIR + "/app"
 
     def __init__(self, config_dir, app_config_file_name):
         """
@@ -122,6 +132,35 @@ class Application(object):
         Validates the configuration files necessary for the application. An exception is thrown
         if any of the required files are inaccessible.
         """
+        # Determine the module of the derived class
+        mod = self.__class__.__module__
+
+        # If the configuration directory exists in the library, create config files as necessary
+        # This check also provides backwards compatibility for projects that don't have the
+        # configuration files in the library.
+        if pkg_resources.resource_exists(mod, self.LIB_CONFIG_DIR):
+            # Create configuration directory if not found
+            if not os.access(self._config_dir, os.R_OK):
+                logger.info("Configuration directory '{0}' not found, creating...".format(self._config_dir))
+                os.makedirs(self._config_dir)
+
+            # Count of current configuration files
+            config_files_count = len([name for name in os.listdir(self._config_dir)
+                                      if os.path.isfile(os.path.join(self._config_dir, name))])
+
+            # Create configuration files if not found
+            files = pkg_resources.resource_listdir(mod, self.LIB_APP_CONFIG_DIR)
+            for f in files:
+                config_path = os.path.join(self._config_dir, f)
+                if not os.access(config_path, os.R_OK):
+                    f_lower = f.lower()
+                    # Copy configuration file. Only copy logging file if the directory was empty
+                    if not(f_lower.endswith(".py") or f_lower.endswith(".pyc")) and \
+                            (f_lower != Application.LOGGING_CONFIG_FILE or config_files_count == 0):
+                        logger.info("Configuration file '{0}' not found, creating...".format(f))
+                        shutil.copyfile(pkg_resources.resource_filename(
+                            mod, self.LIB_APP_CONFIG_DIR + "/" + f), config_path)
+
         if not os.access(self._dxlclient_config_path, os.R_OK):
             raise Exception(
                 "Unable to access client configuration file: {0}".format(

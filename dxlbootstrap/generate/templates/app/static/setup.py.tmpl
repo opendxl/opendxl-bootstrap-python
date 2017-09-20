@@ -36,7 +36,11 @@ dist = setup(
     # Packages
     packages=[
         "${name}",
-    ],
+        "${name}._config",
+        "${name}._config.sample"${packages}],
+
+    package_data={
+        "${name}._config.sample" : ['*']${package_data}},
 
     # Details
     url="",

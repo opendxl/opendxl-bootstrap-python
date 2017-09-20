@@ -71,7 +71,7 @@ class AppTemplateConfig(TemplateConfig):
 
                 :return: The list of package names that the install requires
                 """
-                return ["dxlbootstrap", "dxlclient"]
+                return ["dxlbootstrap>=0.1.3", "dxlclient"]
 
         return ApplicationConfigSection(self)
 
@@ -262,7 +262,10 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("setup.py", "setup.py.tmpl",
                                           {"name": app_section.name,
                                            "installRequires": self.create_install_requires(
-                                               app_section.install_requires)})
+                                               app_section.install_requires),
+                                           "packages": ",\n        \"${name}._config.app\"",
+                                           "package_data": ",\n        \"" +
+                                                           app_section.name + "._config.app\" : ['*']"})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("LICENSE", "LICENSE.tmpl")
@@ -285,6 +288,28 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
     @staticmethod
+    def _copy_config_files(context, components_dict, dir_comp):
+        """
+        Copies the application configuration files to the specified directory
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :param dir_comp: The directory component to copy the files to
+        """
+        del components_dict
+
+        config = context.template.template_config
+        app_section = config.application_section
+
+        file_comp = FileTemplateComponent("logging.config", "config/logging.config.tmpl")
+        dir_comp.add_child(file_comp)
+        file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
+        dir_comp.add_child(file_comp)
+        file_comp = FileTemplateComponent(app_section.name + ".config", "config/app.config.tmpl",
+                                          {"fullName": app_section.full_name})
+        dir_comp.add_child(file_comp)
+
+    @staticmethod
     def _build_config_directory(context, components_dict):
         """
         Builds the "config" directory components of the output
@@ -293,27 +318,27 @@ class AppTemplate(Template):
         :param components_dict: Dictionary containing components by name (and other info)
         :return: The "config" directory components of the output
         """
-        config = context.template.template_config
-        app_section = config.application_section
         root = components_dict["root"]
 
         config_dir = DirTemplateComponent("config")
         root.add_child(config_dir)
 
-        file_comp = FileTemplateComponent("logging.config", "config/logging.config.tmpl")
-        config_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent("logging.config.dist", "config/logging.config.tmpl")
-        config_dir.add_child(file_comp)
+        AppTemplate._copy_config_files(context, components_dict, config_dir)
+
+    @staticmethod
+    def _copy_sample_files(context, components_dict, dir_comp):
+        """
+        Copies the sample configuration files to the specified directory
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :param dir_comp: The directory component to copy the files to
+        """
+        del context
+        del components_dict
+
         file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
-        config_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent("dxlclient.config.dist", "config/dxlclient.config.tmpl")
-        config_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent(app_section.name + ".config", "config/app.config.tmpl",
-                                          {"fullName": app_section.full_name})
-        config_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent(app_section.name + ".config.dist", "config/app.config.tmpl",
-                                          {"fullName": app_section.full_name})
-        config_dir.add_child(file_comp)
+        dir_comp.add_child(file_comp)
 
     @staticmethod
     def _build_sample_directory(context, components_dict):
@@ -324,16 +349,11 @@ class AppTemplate(Template):
         :param components_dict: Dictionary containing components by name (and other info)
         :return: The "sample" directory components of the output
         """
-        del context
         root = components_dict["root"]
 
         sample_dir = DirTemplateComponent("sample")
         root.add_child(sample_dir)
-
-        file_comp = FileTemplateComponent("dxlclient.config", "config/dxlclient.config.tmpl")
-        sample_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent("dxlclient.config.dist", "config/dxlclient.config.tmpl")
-        sample_dir.add_child(file_comp)
+        AppTemplate._copy_sample_files(context, components_dict, sample_dir)
 
         file_comp = FileTemplateComponent("common.py", "sample/common.py.tmpl")
         sample_dir.add_child(file_comp)
@@ -390,7 +410,6 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("running.rst", "doc/sdk/running.rst.tmpl",
                                           {"name": app_section.name})
         sdk_dir.add_child(file_comp)
-
 
         config_title = "{0} ({1}.config)".format(app_section.full_name, app_section.name)
         file_comp = FileTemplateComponent("configuration.rst", "doc/sdk/configuration.rst.tmpl",
@@ -461,6 +480,22 @@ class AppTemplate(Template):
                                           {"appClassName": app_section.app_class_name,
                                            "name": app_section.name})
         app_dir.add_child(file_comp)
+
+        config_dir = DirTemplateComponent("_config")
+        app_dir.add_child(config_dir)
+        blank_init_file_comp = FileTemplateComponent("__init__.py", "app/__init__.py.blank.tmpl")
+
+        config_dir.add_child(blank_init_file_comp)
+
+        config_app_dir = DirTemplateComponent("app")
+        config_dir.add_child(config_app_dir)
+        config_app_dir.add_child(blank_init_file_comp)
+        AppTemplate._copy_config_files(context, components_dict, config_app_dir)
+
+        config_sample_dir = DirTemplateComponent("sample")
+        config_dir.add_child(config_sample_dir)
+        config_sample_dir.add_child(blank_init_file_comp)
+        AppTemplate._copy_sample_files(context, components_dict, config_sample_dir)
 
     @staticmethod
     def _build_event_handlers(context, components_dict):

@@ -64,7 +64,7 @@ class ClientTemplateConfig(TemplateConfig):
 
                 :return: The list of package names that the install requires
                 """
-                return ["dxlbootstrap", "dxlclient"]
+                return ["dxlbootstrap>=0.1.3", "dxlclient"]
 
         return ClientConfigSection(self)
 
@@ -137,7 +137,8 @@ class ClientTemplate(Template):
         file_comp = FileTemplateComponent("setup.py", "../../app/static/setup.py.tmpl",
                                           {"name": client_section.name,
                                            "installRequires": self.create_install_requires(
-                                               client_section.install_requires)})
+                                               client_section.install_requires),
+                                           "packages": "", "package_data": ""})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("LICENSE", "../../app/static/LICENSE.tmpl")
@@ -197,6 +198,32 @@ class ClientTemplate(Template):
 
         client_dir.add_child(file_comp)
 
+        config_dir = DirTemplateComponent("_config")
+        client_dir.add_child(config_dir)
+        blank_init_file_comp = FileTemplateComponent("__init__.py", "../../app/static/app/__init__.py.blank.tmpl")
+
+        config_dir.add_child(blank_init_file_comp)
+
+        config_sample_dir = DirTemplateComponent("sample")
+        config_dir.add_child(config_sample_dir)
+        config_sample_dir.add_child(blank_init_file_comp)
+        ClientTemplate._copy_sample_files(context, components_dict, config_sample_dir)
+
+    @staticmethod
+    def _copy_sample_files(context, components_dict, dir_comp):
+        """
+        Copies the sample configuration files to the specified directory
+
+        :param context: The template context
+        :param components_dict: Dictionary containing components by name (and other info)
+        :param dir_comp: The directory component to copy the files to
+        """
+        del context
+        del components_dict
+
+        file_comp = FileTemplateComponent("dxlclient.config", "../../app/static/config/dxlclient.config.tmpl")
+        dir_comp.add_child(file_comp)
+
     @staticmethod
     def _build_sample_directory(context, components_dict):
         """
@@ -213,10 +240,7 @@ class ClientTemplate(Template):
         sample_dir = DirTemplateComponent("sample")
         root.add_child(sample_dir)
 
-        file_comp = FileTemplateComponent("dxlclient.config", "../../app/static/config/dxlclient.config.tmpl")
-        sample_dir.add_child(file_comp)
-        file_comp = FileTemplateComponent("dxlclient.config.dist", "../../app/static/config/dxlclient.config.tmpl")
-        sample_dir.add_child(file_comp)
+        ClientTemplate._copy_sample_files(context, components_dict, sample_dir)
 
         file_comp = FileTemplateComponent("common.py", "../../app/static/sample/common.py.tmpl")
         sample_dir.add_child(file_comp)

@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import
 
-__version__ = "0.1.2"
+from ._version import __version__
 
 
 def get_version():
