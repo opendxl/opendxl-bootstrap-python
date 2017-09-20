@@ -228,7 +228,7 @@ class AppTemplate(Template):
         for req in config.application_section.install_requires:
             if first:
                 ret += "RUN pip install"
-            ret += "{0} \"{1}\"".format(("" if first else ","), req)
+            ret += " \"{0}\"".format(req)
             first = False
 
         return ret
