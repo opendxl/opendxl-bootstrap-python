@@ -1,4 +1,5 @@
 # OpenDXL Bootstrap Application
+[![Latest PyPI Version](https://img.shields.io/pypi/v/dxlbootstrap.svg)](https://pypi.python.org/pypi/dxlbootstrap)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/opendxl/opendxl-bootstrap-python.png?branch=master)](https://travis-ci.org/opendxl/opendxl-bootstrap-python)
 
