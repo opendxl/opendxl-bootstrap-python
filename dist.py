@@ -98,19 +98,12 @@ run_setup(SETUP_PY,
            "--dist-dir",
            DIST_LIB_DIRECTORY])
 
-print("\nRunning setup.py bdist_egg\n")
-run_setup(SETUP_PY,
-          ["bdist_egg",
-           "--dist-dir",
-           DIST_LIB_DIRECTORY])
-
 print("\nRunning setup.py bdist_wheel\n")
 run_setup(SETUP_PY,
           ["bdist_wheel",
            "--dist-dir",
            DIST_LIB_DIRECTORY,
-           "--python-tag",
-           "py2.7"])
+           "--universal"])
 
 # cp -rf config dist
 print("\nCopying config in to dist directory\n")
