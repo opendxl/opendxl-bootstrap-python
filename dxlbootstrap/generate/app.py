@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 import logging
-from six.moves.configparser import ConfigParser
+from .._compat import ConfigParser
 
 from dxlbootstrap.generate.templates.app.template import AppTemplate
 from dxlbootstrap.generate.templates.client.template import ClientTemplate

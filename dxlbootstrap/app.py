@@ -5,7 +5,7 @@ import logging
 import os
 
 from threading import RLock
-from six.moves.configparser import ConfigParser
+from ._compat import ConfigParser
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.callbacks import EventCallback, RequestCallback

@@ -2,11 +2,9 @@ from __future__ import absolute_import
 import pkg_resources
 import re
 from abc import ABCMeta, abstractmethod
-from six.moves.configparser import NoOptionError
-from cStringIO import StringIO
+from ..._compat import ConfigParserNoOptionError
+from io import StringIO
 from csv import reader
-import six
-from six.moves import range
 
 
 class TemplateContext(object):
@@ -128,7 +126,7 @@ class TemplateConfigSection(object):
         ret = None
         try:
             ret = self._config.get(self._section_name, property_name)
-        except NoOptionError as ex:
+        except ConfigParserNoOptionError as ex:
             if default_value is not None:
                 ret = default_value
             elif required:
@@ -147,7 +145,7 @@ class TemplateConfigSection(object):
         ret = None
         try:
             ret = self._config.getboolean(self._section_name, property_name)
-        except NoOptionError as ex:
+        except ConfigParserNoOptionError as ex:
             if default_value is not None:
                 ret = default_value
             elif required:
@@ -269,7 +267,7 @@ class TemplateConfig(object):
         return self._config
 
 
-class Template(six.with_metaclass(ABCMeta, object)):
+class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metaclass with Python 2 *and* 3
     """
     A template type that is used to determine what will be generated (application template vs.
     client wrapper template, etc.)
@@ -304,7 +302,7 @@ class Template(six.with_metaclass(ABCMeta, object)):
 
         ret_lines = []
         for line in resource.splitlines():
-            for key, value in six.iteritems(replace_dict):
+            for key, value in replace_dict.items():
                 key = "\$\{" + key + "\}"
                 if callable(value):
                     value = value()
