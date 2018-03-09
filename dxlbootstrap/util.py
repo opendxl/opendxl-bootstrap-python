@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import json
 import logging
+from ._compat import unicode
 
 # Configure local logger
 logger = logging.getLogger(__name__)
@@ -92,7 +93,20 @@ class MessageUtils(object):
         :param enc: The encoding to use
         :return: The encoded value
         """
-        return value.encode(encoding=enc)
+        if isinstance(value, unicode):
+            encoded_value = value.encode(enc)
+        elif isinstance(value, (bytes, bytearray)):
+            encoded_value = value
+        elif isinstance(value, dict):
+            encoded_value = MessageUtils.dict_to_json(value).encode(enc)
+        elif isinstance(value, (int, float)):
+            encoded_value = str(value).encode('ascii')
+        elif value is None:
+            encoded_value = b''
+        else:
+            raise TypeError(
+                'value must be a string, bytearray, dict, int, float or None.')
+        return encoded_value
 
     @staticmethod
     def decode(value, enc="utf-8"):

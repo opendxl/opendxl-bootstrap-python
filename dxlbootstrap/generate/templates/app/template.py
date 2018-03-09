@@ -426,7 +426,7 @@ class AppTemplate(Template):
                 ret += "\n"
                 if components_dict["has_services"]:
                     ret += "from dxlclient.service import ServiceRegistrationInfo\n"
-                    ret += "from requesthandlers import *\n"
+                    ret += "from .requesthandlers import *\n"
                 if components_dict["has_events"]:
                     ret += "from eventhandlers import *\n"
             return ret

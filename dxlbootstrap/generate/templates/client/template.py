@@ -188,7 +188,8 @@ class ClientTemplate(Template):
                                           {"clientClassName": client_section.client_class_name,
                                            "fullName": client_section.full_name,
                                            "additionalImports":
-                                               ("from dxlclient.message import Request\n"
+                                               ("from __future__ import absolute_import\n"
+                                                "from dxlclient.message import Request\n"
                                                 "from dxlbootstrap.util import MessageUtils\n"
                                                 if include_example else "")})
 

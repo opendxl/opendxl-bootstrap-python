@@ -298,7 +298,7 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
             replace_dict = {}
 
         resource_path = '/'.join(("static", resource_name))
-        resource = pkg_resources.resource_string(package, resource_path)
+        resource = pkg_resources.resource_string(package, resource_path).decode("utf8")
 
         ret_lines = []
         for line in resource.splitlines():
