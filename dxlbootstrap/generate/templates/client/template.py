@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \

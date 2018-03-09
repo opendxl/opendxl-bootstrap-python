@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 import shutil
 import pkg_resources
 import logging
 import os
 
 from threading import RLock
-from ConfigParser import ConfigParser
+from six.moves.configparser import ConfigParser
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.callbacks import EventCallback, RequestCallback

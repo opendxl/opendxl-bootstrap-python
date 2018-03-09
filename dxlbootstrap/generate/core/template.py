@@ -1,9 +1,12 @@
+from __future__ import absolute_import
 import pkg_resources
 import re
 from abc import ABCMeta, abstractmethod
-from ConfigParser import NoOptionError
+from six.moves.configparser import NoOptionError
 from cStringIO import StringIO
 from csv import reader
+import six
+from six.moves import range
 
 
 class TemplateContext(object):
@@ -266,12 +269,11 @@ class TemplateConfig(object):
         return self._config
 
 
-class Template(object):
+class Template(six.with_metaclass(ABCMeta, object)):
     """
     A template type that is used to determine what will be generated (application template vs.
     client wrapper template, etc.)
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, package):
         """
@@ -302,7 +304,7 @@ class Template(object):
 
         ret_lines = []
         for line in resource.splitlines():
-            for key, value in replace_dict.iteritems():
+            for key, value in six.iteritems(replace_dict):
                 key = "\$\{" + key + "\}"
                 if callable(value):
                     value = value()
