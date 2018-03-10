@@ -1,10 +1,10 @@
 from __future__ import absolute_import
-import pkg_resources
-import re
 from abc import ABCMeta, abstractmethod
-from ..._compat import ConfigParserNoOptionError
-from io import StringIO
 from csv import reader
+from io import StringIO
+import re
+import pkg_resources
+from ..._compat import ConfigParserNoOptionError
 
 
 class TemplateContext(object):
@@ -42,7 +42,7 @@ class TemplateContext(object):
         return self._current_dir
 
     @current_directory.setter
-    def current_directory(self, d):
+    def current_directory(self, d): # pylint: disable=invalid-name
         """
         Sets the current output directory
 
@@ -78,7 +78,7 @@ class TemplateContext(object):
         return self._file
 
     @file.setter
-    def file(self, f):
+    def file(self, f): # pylint: disable=invalid-name
         """
         Sets the file to write to
         :param f: The file to write to
@@ -93,7 +93,7 @@ class TemplateContext(object):
         """
         for line in lines:
             indent = ""
-            for i in range(0, self._indent_level):
+            for _ in range(0, self._indent_level):
                 indent += "    "
             self._file.write(indent + line + "\n")
 
@@ -170,10 +170,10 @@ class TemplateConfigSection(object):
             for items in csv_reader:
                 for item in items:
                     item = item.strip()
-                    if len(item) > 0:
+                    if item:
                         list_items.append(item)
 
-        if len(list_items) is 0:
+        if not list_items:
             if default_value is not None:
                 list_items = default_value
             elif required:
@@ -187,15 +187,6 @@ class PythonPackageConfigSection(TemplateConfigSection):
     Section that is used to access properties related to the generation of a Python package.
     This includes high-level information such as the package name, copyright information, etc.
     """
-
-    def __init__(self, template_config, section_name):
-        """
-        Constructs the configuration section
-
-        :param template_config: The template configuration
-        :param section_name: The name of the section within the configuration
-        """
-        super(PythonPackageConfigSection, self).__init__(template_config, section_name)
 
     @property
     def name(self):
@@ -224,7 +215,8 @@ class PythonPackageConfigSection(TemplateConfigSection):
         """
         return self._get_property("copyright", required=False, default_value="")
 
-    def _get_install_requires_list(self):
+    @staticmethod
+    def _get_install_requires_list():
         """
         Returns the list of package names that the install requires
 
@@ -303,7 +295,7 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
         ret_lines = []
         for line in resource.splitlines():
             for key, value in replace_dict.items():
-                key = "\$\{" + key + "\}"
+                key = r"\$\{" + key + r"\}"
                 if callable(value):
                     value = value()
                 else:
@@ -325,7 +317,7 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
         :return: An underline
         """
         ret = ""
-        for x in range(0, length):
+        for _ in range(0, length):
             ret += char
         return ret
 

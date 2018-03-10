@@ -10,6 +10,8 @@ import sys
 
 from .generate.app import DxlBootstrap
 
+# pylint: disable=invalid-name
+
 # Validate command line
 arg_count = len(sys.argv)
 if arg_count < 3:

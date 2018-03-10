@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import json
 import logging
-from ._compat import unicode
+from ._compat import UnicodeString
 
 # Configure local logger
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class MessageUtils(object):
     """
 
     @staticmethod
-    def dict_to_json(dict, pretty_print=False):
+    def dict_to_json(dict, pretty_print=False): # pylint: disable=redefined-builtin
         """
         Converts the specified Python dictionary (``dict``) to a JSON string and
         returns it.
@@ -24,8 +24,7 @@ class MessageUtils(object):
         """
         if pretty_print:
             return json.dumps(dict, sort_keys=True, indent=4, separators=(',', ': '))
-        else:
-            return json.dumps(dict)
+        return json.dumps(dict)
 
     @staticmethod
     def json_to_dict(json_string):
@@ -39,7 +38,7 @@ class MessageUtils(object):
         return json.loads(json_string.rstrip("\0"))
 
     @staticmethod
-    def dict_to_json_payload(message, dict, enc="utf-8"):
+    def dict_to_json_payload(message, dict, enc="utf-8"): # pylint: disable=redefined-builtin
         """
         Converts the specified Python dictionary (``dict``) to a JSON string and places
         it in the DXL message's payload.
@@ -93,7 +92,7 @@ class MessageUtils(object):
         :param enc: The encoding to use
         :return: The encoded value
         """
-        if isinstance(value, unicode):
+        if isinstance(value, UnicodeString):
             encoded_value = value.encode(enc)
         elif isinstance(value, (bytes, bytearray)):
             encoded_value = value

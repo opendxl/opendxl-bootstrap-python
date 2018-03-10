@@ -15,4 +15,3 @@ def get_version():
     :return: The version of the OpenDXL Bootstrap Application
     """
     return __version__
-

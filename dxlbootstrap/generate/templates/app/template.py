@@ -3,21 +3,12 @@ from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, TemplateConfigSection, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \
     import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
-from dxlbootstrap import get_version
 
 
 class AppTemplateConfig(TemplateConfig):
     """
     Configuration for the application template
     """
-
-    def __init__(self, config):
-        """
-        Constructs the configuration
-
-        :param config: The Python configuration to wrap
-        """
-        super(AppTemplateConfig, self).__init__(config)
 
     @property
     def application_section(self):
@@ -495,7 +486,7 @@ class AppTemplate(Template):
         app_dir = components_dict["app_dir"]
 
         event_handlers = app_section.event_handlers
-        if len(event_handlers) > 0:
+        if event_handlers:
             components_dict["has_events"] = True
             register_event_handler_def_comp = CodeTemplateComponent("app/code/register_event_handler_def.code.tmpl")
             register_event_handler_def_comp.indent_level = 1
@@ -543,7 +534,7 @@ class AppTemplate(Template):
 
         service_names = app_section.services
         requests_file_comp = None
-        if len(service_names) > 0:
+        if service_names:
             components_dict["has_services"] = True
             register_services_def_comp = CodeTemplateComponent("app/code/register_services_def.code.tmpl")
             register_services_def_comp.indent_level = 1

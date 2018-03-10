@@ -3,21 +3,12 @@ from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \
     import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
-from dxlbootstrap import get_version
 
 
 class ClientTemplateConfig(TemplateConfig):
     """
     Configuration for the client template
     """
-
-    def __init__(self, config):
-        """
-        Constructs the configuration
-
-        :param config: The Python configuration to wrap
-        """
-        super(ClientTemplateConfig, self).__init__(config)
 
     @property
     def client_section(self):
