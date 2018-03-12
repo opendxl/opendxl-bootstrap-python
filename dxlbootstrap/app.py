@@ -155,10 +155,16 @@ class Application(object):
             for file_name in files:
                 config_path = os.path.join(self._config_dir, file_name)
                 if not os.access(config_path, os.R_OK):
+                    resource_filename = pkg_resources.resource_filename(
+                        mod, self.LIB_APP_CONFIG_DIR + "/" + file_name)
                     f_lower = file_name.lower()
-                    # Copy configuration file. Only copy logging file if the directory was empty
-                    if not(f_lower.endswith(".py") or f_lower.endswith(".pyc")) and \
-                            (f_lower != Application.LOGGING_CONFIG_FILE or config_files_count == 0):
+                    # Copy configuration file. Only copy logging file if the
+                    # directory was empty
+                    if os.path.isfile(resource_filename) and \
+                            not(f_lower.endswith(".py")) and \
+                            not(f_lower.endswith(".pyc")) and \
+                            (f_lower != Application.LOGGING_CONFIG_FILE or
+                             config_files_count == 0):
                         logger.info(
                             "Configuration file '%s' not found, creating...",
                             file_name)
