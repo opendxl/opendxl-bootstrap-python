@@ -44,11 +44,13 @@ subprocess.check_call(["sphinx-apidoc",
                        os.path.join(DIST_PY_FILE_LOCATION, "${name}")])
 
 print("\nCopying conf.py and sdk directory\n")
-copy_file(os.path.join(DIST_PY_FILE_LOCATION, "doc", "conf.py"), os.path.join(DIST_DOCTMP_DIR, "conf.py"))
+copy_file(os.path.join(DIST_PY_FILE_LOCATION, "doc", "conf.py"),
+          os.path.join(DIST_DOCTMP_DIR, "conf.py"))
 copy_tree(os.path.join(DIST_PY_FILE_LOCATION, "doc", "sdk"), DIST_DOCTMP_DIR)
 
 print("\nCalling sphinx-build\n")
-subprocess.check_call(["sphinx-build", "-b", "html", DIST_DOCTMP_DIR, os.path.join(DIST_DIRECTORY, "doc")])
+subprocess.check_call(["sphinx-build", "-b", "html", DIST_DOCTMP_DIR,
+                       os.path.join(DIST_DIRECTORY, "doc")])
 
 # Delete .doctrees
 remove_tree(os.path.join(os.path.join(DIST_DIRECTORY, "doc"), ".doctrees"), verbose=1)

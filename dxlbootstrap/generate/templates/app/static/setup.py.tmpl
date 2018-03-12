@@ -9,17 +9,17 @@ import setuptools.command.sdist
 # Patch setuptools' sdist behaviour with distutils' sdist behaviour
 setuptools.command.sdist.sdist.run = distutils.command.sdist.sdist.run
 
-version_info = {}
-cwd=os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(cwd, "${name}", "_version.py")) as f:
-    exec(f.read(), version_info)
+VERSION_INFO = {}
+CWD = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(CWD, "${name}", "_version.py")) as f:
+    exec(f.read(), VERSION_INFO)
 
-dist = setup(
+setup(
     # Package name:
     name="${name}",
 
     # Version number:
-    version=version_info["__version__"],
+    version=VERSION_INFO["__version__"],
 
     # Requirements
     install_requires=[${installRequires}

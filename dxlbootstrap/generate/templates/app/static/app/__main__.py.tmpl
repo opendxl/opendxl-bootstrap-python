@@ -78,6 +78,6 @@ with ${appClassName}(sys.argv[1]) as app:
 
     except KeyboardInterrupt:
         pass
-    except:
+    except Exception:
         logger.exception("Error occurred, exiting")
         sys.exit(1)
