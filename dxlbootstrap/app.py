@@ -160,7 +160,7 @@ class Application(object):
                     f_lower = file_name.lower()
                     # Copy configuration file. Only copy logging file if the
                     # directory was empty
-                    if os.path.isfile(resource_filename) and \
+                    if not os.path.isdir(resource_filename) and \
                             not(f_lower.endswith(".py")) and \
                             not(f_lower.endswith(".pyc")) and \
                             (f_lower != Application.LOGGING_CONFIG_FILE or

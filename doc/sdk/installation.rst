@@ -19,7 +19,7 @@ Use ``pip`` to automatically install the library:
 
     .. parsed-literal::
 
-        pip install dxlbootstrap-\ |version|\-py2.7-none-any.whl
+        pip install dxlbootstrap-\ |version|\-py2.py3-none-any.whl
 
 Or with:
 

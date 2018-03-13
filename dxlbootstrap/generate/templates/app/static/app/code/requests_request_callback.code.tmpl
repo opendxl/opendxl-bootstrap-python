@@ -20,8 +20,8 @@ class ${className}(RequestCallback):
         """
         # Handle request
         logger.info("Request received on topic: '%s' with payload: '%s'",
-            request.destination_topic,
-            MessageUtils.decode_payload(request)))
+                    request.destination_topic,
+                    MessageUtils.decode_payload(request))
 
         try:
             # Create response
