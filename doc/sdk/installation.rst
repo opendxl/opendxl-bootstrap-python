@@ -4,7 +4,8 @@ Installation
 Prerequisites
 *************
 
-* Python 2.7.9 or higher installed within a Windows or Linux environment (Python 3 is not supported at this time)
+* Python 2.7.9 or higher in the Python 2.x series or Python 3.4.0 or higher
+  in the Python 3.x series installed within a Windows or Linux environment.
 
 * The OpenDXL Python Client prerequisites must be satisfied
 
