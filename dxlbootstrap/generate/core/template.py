@@ -4,7 +4,7 @@ from csv import reader
 from io import StringIO
 import re
 import pkg_resources
-from ..._compat import ConfigParserNoOptionError
+from ..._exceptions import NoOptionError
 
 
 class TemplateContext(object):
@@ -123,14 +123,11 @@ class TemplateConfigSection(object):
         :param required: If the value is required
         :return: The value associated with the specified name
         """
-        ret = None
-        try:
+        ret = default_value
+        if self._config.has_option(self._section_name, property_name):
             ret = self._config.get(self._section_name, property_name)
-        except ConfigParserNoOptionError as ex:
-            if default_value is not None:
-                ret = default_value
-            elif required:
-                raise ex
+        elif required:
+            raise NoOptionError(property_name, self._section_name)
         return ret
 
     def _get_boolean_property(self, property_name, default_value=None, required=False):
@@ -142,14 +139,11 @@ class TemplateConfigSection(object):
         :param required: If the value is required
         :return: The value for the specified property
         """
-        ret = None
-        try:
+        ret = default_value
+        if self._config.has_option(self._section_name, property_name):
             ret = self._config.getboolean(self._section_name, property_name)
-        except ConfigParserNoOptionError as ex:
-            if default_value is not None:
-                ret = default_value
-            elif required:
-                raise ex
+        elif required:
+            raise NoOptionError(property_name, self._section_name)
         return ret
 
     def _get_list_property(self, property_name, default_value=None, required=False):
@@ -177,7 +171,7 @@ class TemplateConfigSection(object):
             if default_value is not None:
                 list_items = default_value
             elif required:
-                raise Exception("No option '{0}' in section: '{1}'".format(property_name, self._section_name))
+                raise NoOptionError(property_name, self._section_name)
 
         return list_items
 
