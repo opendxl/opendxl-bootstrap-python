@@ -419,7 +419,7 @@ class AppTemplate(Template):
                     ret += "from dxlclient.service import ServiceRegistrationInfo\n"
                     ret += "from .requesthandlers import *\n"
                 if components_dict["has_events"]:
-                    ret += "from eventhandlers import *\n"
+                    ret += "from .eventhandlers import *\n"
             return ret
 
         config = context.template.template_config

@@ -19,7 +19,5 @@ class ${className}(EventCallback):
         :param event: The event message
         """
         # Handle event
-        logger.info("Event received on topic: '{0}' with payload: '{1}'".format(
-            event.destination_topic, MessageUtils.decode_payload(event)))
-
-
+        logger.info("Event received on topic: '%s' with payload: '%s'",
+                    event.destination_topic, MessageUtils.decode_payload(event))

@@ -38,5 +38,3 @@ class ${className}(RequestCallback):
             err_res = ErrorResponse(request, error_code=0,
                                     error_message=MessageUtils.encode(str(ex)))
             self._app.client.send_response(err_res)
-
-
