@@ -215,24 +215,6 @@ class AppTemplate(Template):
         """
         return AppTemplateConfig(config)
 
-    @staticmethod
-    def create_pip_install(config):
-        """
-        Used to create the text content for "RUN pip install..." lines within the Dockerfile
-
-        :param config: The application configuration
-        :return: The text content for "RUN pip install..." lines within the Dockerfile
-        """
-        ret = ""
-        first = True
-        for req in config.application_section.install_requires:
-            if first:
-                ret += "RUN pip install"
-            ret += " \"{0}\"".format(req)
-            first = False
-
-        return ret
-
     def _build_root_directory(self, context, components_dict):
         """
         Builds the "root" directory components of the output
@@ -283,8 +265,7 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("Dockerfile", "Dockerfile.tmpl",
-                                          {"name": app_section.name,
-                                           "pipInstall": self.create_pip_install(config)})
+                                          {"name": app_section.name})
         root.add_child(file_comp)
 
     @staticmethod
