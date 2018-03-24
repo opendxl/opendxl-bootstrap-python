@@ -1,5 +1,5 @@
-# Base image from Python 2.7 (slim)
-FROM python:2.7-slim
+# Base image from Python ${pythonVersion} (slim)
+FROM python:${pythonVersion}-slim
 
 VOLUME ["/opt/${name}-config"]
 

@@ -19,9 +19,12 @@ setup(
     # Version number:
     version=VERSION_INFO["__version__"],
 
-    # Requirements
+    # Package requirements
     install_requires=[${installRequires}
     ],
+
+    # Python version requirements
+    python_requires="${pythonRequires}",
 
     # Package author details:
     author="",
@@ -48,7 +51,6 @@ setup(
 
     long_description=open('README').read(),
 
-    classifiers=[
-        "Programming Language :: Python"
+    classifiers=[${classifiers}
     ],
 )

@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
 from csv import reader
 from io import StringIO
+from operator import itemgetter
 import re
 import pkg_resources
 from ..._exceptions import NoOptionError
@@ -182,6 +183,9 @@ class PythonPackageConfigSection(TemplateConfigSection):
     This includes high-level information such as the package name, copyright information, etc.
     """
 
+    DEFAULT_LANGUAGE_VERSION = "2.7.9"
+    UNIVERSAL_LANGUAGE_VERSION = "universal"
+
     @property
     def name(self):
         """
@@ -228,6 +232,40 @@ class PythonPackageConfigSection(TemplateConfigSection):
         reqs = self._get_list_property("installRequires", required=False, default_value=[])[:]
         reqs.extend(self._get_install_requires_list())
         return reqs
+
+    @property
+    def language_versions(self):
+        """
+        Returns a list containing the Python language versions that the
+        application requires.
+
+        :return: A list of the Python language versions that the application
+            requires.
+        """
+        versions = \
+            [version.lower() for version in self._get_list_property(
+                "languageVersions", required=False,
+                default_value=[self.DEFAULT_LANGUAGE_VERSION])]
+        if self.UNIVERSAL_LANGUAGE_VERSION in versions:
+            versions = [self.UNIVERSAL_LANGUAGE_VERSION]
+        else:
+            version_component_list = []
+            for version in versions:
+                if not re.match(r'^\d+(\.\d*){0,2}$', version):
+                    raise Exception("Unexpected value in languageVersions: " +
+                                    version + ". Expected X(.Y.Z) format " +
+                                    "(for example, '2', '2.7', or '2.7.9') or '" +
+                                    self.UNIVERSAL_LANGUAGE_VERSION + "'.")
+                version_components = re.split(r'\D+', version)
+                while len(version_components) < 3:
+                    version_components.append('x')
+                version_component_list.append(version_components)
+                sorted_by_z = sorted(version_component_list, key=itemgetter(2))
+                sorted_by_y = sorted(sorted_by_z, key=itemgetter(1))
+                sorted_by_x = sorted(sorted_by_y, key=itemgetter(0))
+                versions = [".".join(version_components).replace(".x", "") \
+                            for version_components in sorted_by_x]
+        return versions
 
 
 class TemplateConfig(object):
@@ -383,3 +421,142 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
         context = TemplateContext(self)
         context.current_directory = dest_folder
         self._do_run(context)
+
+    @staticmethod
+    def _has_only_python_2_support(versions):
+        """
+        Determines from a list of supported language versions if only Python 2
+        is supported.
+
+        :param versions: List of supported language versions in the configuration.
+        :return: Returns true if the configuration only supports Python 2.x.
+            Otherwise, returns false - most likely, if the configuration
+            supports at least one Python 3.x version.
+        """
+        return versions[len(versions) - 1][0] == '2'
+
+    @staticmethod
+    def remove_z_version(version):
+        """
+        Removes a .Z version from a version string in X.Y.Z format. If the
+        version string is not in X.Y.Z format, the version passed into
+        the method is returned unchanged.
+
+        :param version: The version string to parse.
+        :return: A string with the .Z portion of the version removed.
+        """
+        if version.count(".") == 2:
+            version = version.rpartition(".")[0]
+        return version
+
+    @staticmethod
+    def create_dist_version_tag(versions, create_bdist_wheel_args=True):
+        """
+        Returns a tag to be applied to the name of a Python wheel package built
+        with the setup.py bdist_wheel command. For example, if the supported
+        versions for the package are "2" and "3", the return tag would be
+        "py2.py3".
+
+        :param versions: List of supported language versions in the configuration.
+        :param create_bdist_wheel_args: If true, return the tag as the full
+            parameter to be passed to the setup.py bdist_wheel command - for
+            example, --python-tag py27. If false, return the tag as just the tag
+            itself - for example, py27.
+        :returns: The dist version tag.
+        """
+        version_tag = '"--universal"' if create_bdist_wheel_args else "py2.py3"
+        if PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION not in versions:
+            version_tag = '"--python-tag", "' \
+                if create_bdist_wheel_args else ""
+            for version in versions:
+                version_tag = version_tag + "py" + Template.remove_z_version(
+                    version).replace(".", "") + "."
+            version_tag = version_tag[:-1]
+            if create_bdist_wheel_args:
+                version_tag += '"'
+        return version_tag
+
+    @staticmethod
+    def create_language_requires(versions):
+        """
+        Returns a language requirement string for use as the 'python_requires'
+        argument in setup.py.
+
+        :param versions: List of supported versions in the configuration.
+        :returns: The string for use with the 'python_requires' field in
+            setup.py.
+        """
+        if PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION in versions:
+            language_requires = ">=2.7.9,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+        else:
+            language_requires = ">=" + versions[0]
+            if Template._has_only_python_2_support(versions):
+                language_requires = language_requires + ",<3"
+        return language_requires
+
+    @staticmethod
+    def create_classifiers(versions):
+        """
+        Returns the text portion of the classifiers section of a setup.py file,
+        with classifiers for supported language versions.
+
+        :param versions: List of supported language versions in the configuration.
+        :return: The string for use with the 'classifiers' field in setup.py.
+        """
+        program_language_base = '"Programming Language : Python'
+        line_delimiter = "\n        "
+        classifiers = line_delimiter + program_language_base + '",'
+        if PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION in versions:
+            versions = ["2", "2.7", "3", "3.4", "3.5", "3.6"]
+        for version in versions:
+            classifiers = classifiers + line_delimiter + \
+                          program_language_base + " :: " + \
+                          Template.remove_z_version(version) + '",'
+        classifiers = classifiers[:-1]
+        return classifiers
+
+    @staticmethod
+    def create_docker_image_language_version(versions):
+        """
+        Return the language version for the base Docker image to be built for
+        an application.
+
+        :param versions: List of supported language versions in the configuration.
+        :return: The language version for use in the Dockerfile.
+        """
+        return Template.remove_z_version(
+            PythonPackageConfigSection.DEFAULT_LANGUAGE_VERSION \
+                if PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION in versions \
+                else versions[0])
+
+    @staticmethod
+    def create_installation_doc_version_text(versions):
+        """
+        Return the supported language version text for use in the installation
+        documentation.
+
+        :param versions: List of supported language versions in the configuration.
+        :return: The language version text.
+        """
+        os_text = " installed within a Windows or Linux environment."
+        if PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION in versions:
+            version_text = \
+                "2.7.9 or higher in the Python 2.x series or " + \
+                "3.4.0 or higher in the Python 3.x series" + \
+                os_text
+        else:
+            version_text = ""
+            for i, version in enumerate(versions):
+                if i == len(versions) - 1 and len(versions) > 1:
+                    version_text += "or "
+                version_text = version_text + version
+                if i < len(versions) - 1:
+                    if len(versions) > 2:
+                        version_text += ","
+                    version_text += " "
+            if len(versions) == 1:
+                version_text += " or higher"
+            version_text += os_text
+            if Template._has_only_python_2_support(versions):
+                version_text += " (Python 3 is not supported at this time)"
+        return version_text
