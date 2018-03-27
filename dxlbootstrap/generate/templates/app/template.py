@@ -373,6 +373,10 @@ class AppTemplate(Template):
                                            "name": app_section.name})
         doc_dir.add_child(file_comp)
 
+        file_comp = FileTemplateComponent("docutils.conf",
+                                          "doc/docutils.conf.tmpl")
+        doc_dir.add_child(file_comp)
+
         sdk_dir = DirTemplateComponent("sdk")
         doc_dir.add_child(sdk_dir)
 
