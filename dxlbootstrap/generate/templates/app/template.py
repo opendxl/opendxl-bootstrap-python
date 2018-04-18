@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import re
 from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, TemplateConfigSection, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \
@@ -367,8 +368,10 @@ class AppTemplate(Template):
         doc_dir = DirTemplateComponent("doc")
         root.add_child(doc_dir)
 
+        copyright_body = re.sub(r"^Copyright ", "",
+                                app_section.copyright, flags=re.IGNORECASE)
         file_comp = FileTemplateComponent("conf.py", "doc/conf.py.tmpl",
-                                          {"copyright": app_section.copyright,
+                                          {"copyright": copyright_body,
                                            "fullName": app_section.full_name,
                                            "name": app_section.name})
         doc_dir.add_child(file_comp)
