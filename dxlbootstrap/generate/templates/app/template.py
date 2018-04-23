@@ -64,7 +64,7 @@ class AppTemplateConfig(TemplateConfig):
 
                 :return: The list of package names that the install requires
                 """
-                return ["dxlbootstrap>=0.1.3", "dxlclient"]
+                return ["dxlbootstrap>=0.2.0", "dxlclient>=4.1.0.184"]
 
         return ApplicationConfigSection(self)
 
