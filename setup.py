@@ -62,7 +62,7 @@ setup(
 
     # Requirements
     install_requires=[
-        "dxlclient"
+        "dxlclient>=4.1.0.184"
     ],
 
     tests_require=TEST_REQUIREMENTS,
