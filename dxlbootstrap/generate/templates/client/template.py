@@ -132,10 +132,10 @@ class ClientTemplate(Template):
                                            "installRequires": self.create_install_requires(
                                                client_section.install_requires),
                                            "pythonRequires": self.create_language_requires(
-                                               client_section.language_versions),
+                                               client_section.language_version),
                                            "packages": "", "package_data": "",
                                            "classifiers": self.create_classifiers(
-                                               client_section.language_versions)
+                                               client_section.language_version)
                                           })
         root.add_child(file_comp)
 
@@ -148,7 +148,7 @@ class ClientTemplate(Template):
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
                                           {"name": client_section.name,
                                            "versionTag": self.create_dist_version_tag(
-                                               client_section.language_versions)})
+                                               client_section.language_version)})
         root.add_child(file_comp)
         file_comp = FileTemplateComponent("clean.py", "../../app/static/clean.py.tmpl",
                                           {"name": client_section.name})
@@ -312,10 +312,9 @@ class ClientTemplate(Template):
                                           {"name": client_section.name,
                                            "pythonVersion":
                                                self.create_installation_doc_version_text(
-                                                   client_section.language_versions),
+                                                   client_section.language_version),
                                            "versionTag": self.create_dist_version_tag(
-                                               client_section.language_versions,
-                                               False)
+                                               client_section.language_version)
                                           })
         sdk_dir.add_child(file_comp)
 

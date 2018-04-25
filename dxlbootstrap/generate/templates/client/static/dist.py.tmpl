@@ -74,7 +74,8 @@ run_setup(SETUP_PY,
           ["bdist_wheel",
            "--dist-dir",
            DIST_LIB_DIRECTORY,
-           ${versionTag}])
+           "--python-tag",
+           "${versionTag}"])
 
 print("\nCopying sample into dist directory\n")
 copy_tree(os.path.join(DIST_PY_FILE_LOCATION, "sample"), SAMPLE_RELEASE_DIR)

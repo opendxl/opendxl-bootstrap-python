@@ -78,7 +78,8 @@ run_setup(SETUP_PY,
           ["bdist_wheel",
            "--dist-dir",
            DIST_LIB_DIRECTORY,
-           ${versionTag}])
+           "--python-tag",
+           "${versionTag}"])
 
 print("\nCopying config into dist directory\n")
 copy_tree(os.path.join(DIST_PY_FILE_LOCATION, "config"), DIST_CONFIG_DIRECTORY)

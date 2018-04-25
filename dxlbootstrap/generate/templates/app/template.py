@@ -239,7 +239,7 @@ class AppTemplate(Template):
                                            "installRequires": self.create_install_requires(
                                                app_section.install_requires),
                                            "pythonRequires": self.create_language_requires(
-                                               app_section.language_versions),
+                                               app_section.language_version),
                                            "packages": ',\n        "' +
                                                        app_section.name +
                                                        '._config.app"',
@@ -247,7 +247,7 @@ class AppTemplate(Template):
                                                            app_section.name +
                                                            "._config.app\" : ['*']",
                                            "classifiers": self.create_classifiers(
-                                               app_section.language_versions)
+                                               app_section.language_version)
                                           })
         root.add_child(file_comp)
 
@@ -260,7 +260,7 @@ class AppTemplate(Template):
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
                                           {"name": app_section.name,
                                            "versionTag": self.create_dist_version_tag(
-                                               app_section.language_versions)})
+                                               app_section.language_version)})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("clean.py", "clean.py.tmpl",
@@ -271,7 +271,7 @@ class AppTemplate(Template):
                                           {"name": app_section.name,
                                            "pythonVersion":
                                                self.create_docker_image_language_version(
-                                                   app_section.language_versions)
+                                                   app_section.language_version)
                                           })
         root.add_child(file_comp)
 
@@ -402,10 +402,9 @@ class AppTemplate(Template):
                                           {"name": app_section.name,
                                            "pythonVersion":
                                                self.create_installation_doc_version_text(
-                                                   app_section.language_versions),
+                                                   app_section.language_version),
                                            "versionTag": self.create_dist_version_tag(
-                                               app_section.language_versions,
-                                               False
+                                               app_section.language_version
                                            )})
         sdk_dir.add_child(file_comp)
         file_comp = FileTemplateComponent("running.rst", "doc/sdk/running.rst.tmpl",
