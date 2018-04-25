@@ -125,7 +125,8 @@ class TemplateConfigSection(object):
         """
         ret = default_value
         if self._config.has_option(self._section_name, property_name):
-            ret = self._config.get(self._section_name, property_name)
+            value = self._config.get(self._section_name, property_name)
+            ret = value.decode() if isinstance(value, bytes) else value
         elif required:
             raise NoOptionError(property_name, self._section_name)
         return ret
