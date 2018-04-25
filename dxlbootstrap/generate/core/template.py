@@ -1,9 +1,10 @@
-import pkg_resources
-import re
+from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
-from ConfigParser import NoOptionError
-from cStringIO import StringIO
 from csv import reader
+from io import StringIO
+import re
+import pkg_resources
+from ..._exceptions import NoOptionError
 
 
 class TemplateContext(object):
@@ -41,7 +42,7 @@ class TemplateContext(object):
         return self._current_dir
 
     @current_directory.setter
-    def current_directory(self, d):
+    def current_directory(self, d): # pylint: disable=invalid-name
         """
         Sets the current output directory
 
@@ -77,7 +78,7 @@ class TemplateContext(object):
         return self._file
 
     @file.setter
-    def file(self, f):
+    def file(self, f): # pylint: disable=invalid-name
         """
         Sets the file to write to
         :param f: The file to write to
@@ -92,7 +93,7 @@ class TemplateContext(object):
         """
         for line in lines:
             indent = ""
-            for i in range(0, self._indent_level):
+            for _ in range(0, self._indent_level):
                 indent += "    "
             self._file.write(indent + line + "\n")
 
@@ -122,14 +123,11 @@ class TemplateConfigSection(object):
         :param required: If the value is required
         :return: The value associated with the specified name
         """
-        ret = None
-        try:
+        ret = default_value
+        if self._config.has_option(self._section_name, property_name):
             ret = self._config.get(self._section_name, property_name)
-        except NoOptionError as ex:
-            if default_value is not None:
-                ret = default_value
-            elif required:
-                raise ex
+        elif required:
+            raise NoOptionError(property_name, self._section_name)
         return ret
 
     def _get_boolean_property(self, property_name, default_value=None, required=False):
@@ -141,14 +139,11 @@ class TemplateConfigSection(object):
         :param required: If the value is required
         :return: The value for the specified property
         """
-        ret = None
-        try:
+        ret = default_value
+        if self._config.has_option(self._section_name, property_name):
             ret = self._config.getboolean(self._section_name, property_name)
-        except NoOptionError as ex:
-            if default_value is not None:
-                ret = default_value
-            elif required:
-                raise ex
+        elif required:
+            raise NoOptionError(property_name, self._section_name)
         return ret
 
     def _get_list_property(self, property_name, default_value=None, required=False):
@@ -169,14 +164,14 @@ class TemplateConfigSection(object):
             for items in csv_reader:
                 for item in items:
                     item = item.strip()
-                    if len(item) > 0:
+                    if item:
                         list_items.append(item)
 
-        if len(list_items) is 0:
+        if not list_items:
             if default_value is not None:
                 list_items = default_value
             elif required:
-                raise Exception("No option '{0}' in section: '{1}'".format(property_name, self._section_name))
+                raise NoOptionError(property_name, self._section_name)
 
         return list_items
 
@@ -187,14 +182,10 @@ class PythonPackageConfigSection(TemplateConfigSection):
     This includes high-level information such as the package name, copyright information, etc.
     """
 
-    def __init__(self, template_config, section_name):
-        """
-        Constructs the configuration section
-
-        :param template_config: The template configuration
-        :param section_name: The name of the section within the configuration
-        """
-        super(PythonPackageConfigSection, self).__init__(template_config, section_name)
+    MINIMUM_PYTHON_2_LANGUAGE_VERSION = "2.7.9"
+    MINIMUM_PYTHON_3_LANGUAGE_VERSION = "3.4"
+    MAXIMUM_PYTHON_3_LANGUAGE_VERSION = "3.6"
+    UNIVERSAL_LANGUAGE_VERSION = "universal"
 
     @property
     def name(self):
@@ -223,7 +214,8 @@ class PythonPackageConfigSection(TemplateConfigSection):
         """
         return self._get_property("copyright", required=False, default_value="")
 
-    def _get_install_requires_list(self):
+    @staticmethod
+    def _get_install_requires_list():
         """
         Returns the list of package names that the install requires
 
@@ -241,6 +233,21 @@ class PythonPackageConfigSection(TemplateConfigSection):
         reqs = self._get_list_property("installRequires", required=False, default_value=[])[:]
         reqs.extend(self._get_install_requires_list())
         return reqs
+
+    @property
+    def language_version(self):
+        """
+        Returns the Python language version that the application requires.
+
+        :return: "2", "3", or "universal" (2 and 3).
+        """
+        version = self._get_property("languageVersion", required=False,
+                                     default_value="2").lower()
+        if version not in ('2', '3', self.UNIVERSAL_LANGUAGE_VERSION):
+            raise Exception(
+                "Unexpected value in languageVersion: " + version +
+                ". Expected '2', '3', or 'universal' (2 and 3).")
+        return version
 
 
 class TemplateConfig(object):
@@ -266,12 +273,11 @@ class TemplateConfig(object):
         return self._config
 
 
-class Template(object):
+class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metaclass with Python 2 *and* 3
     """
     A template type that is used to determine what will be generated (application template vs.
     client wrapper template, etc.)
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, package):
         """
@@ -298,12 +304,12 @@ class Template(object):
             replace_dict = {}
 
         resource_path = '/'.join(("static", resource_name))
-        resource = pkg_resources.resource_string(package, resource_path)
+        resource = pkg_resources.resource_string(package, resource_path).decode("utf8")
 
         ret_lines = []
         for line in resource.splitlines():
-            for key, value in replace_dict.iteritems():
-                key = "\$\{" + key + "\}"
+            for key, value in replace_dict.items():
+                key = r"\$\{" + key + r"\}"
                 if callable(value):
                     value = value()
                 else:
@@ -325,7 +331,7 @@ class Template(object):
         :return: An underline
         """
         ret = ""
-        for x in range(0, length):
+        for _ in range(0, length):
             ret += char
         return ret
 
@@ -397,3 +403,149 @@ class Template(object):
         context = TemplateContext(self)
         context.current_directory = dest_folder
         self._do_run(context)
+
+    @staticmethod
+    def create_dist_version_tag(version):
+        """
+        Returns a tag to be applied to the name of a Python wheel package built
+        with the setup.py bdist_wheel command. For example, if the supported
+        versions for the package are "2" and "3", the return tag would be
+        "py2.py3".
+
+        :param version: Supported language version in the configuration.
+        :returns: The dist version tag.
+        """
+        if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
+            version_tag = "py2.py3"
+        elif version == "3":
+            version_tag = "py3"
+        elif version == "2":
+            version_tag = "py2"
+        else:
+            raise Exception("Unexpected version passed into " +
+                            "create_dist_version_tag function")
+        return version_tag
+
+    @staticmethod
+    def create_language_requires(version):
+        """
+        Returns a language requirement string for use as the 'python_requires'
+        argument in setup.py.
+
+        :param version: Supported language version in the configuration.
+        :returns: The string for use with the 'python_requires' field in
+            setup.py.
+        """
+        if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
+            language_requires = \
+                ">=" + \
+                PythonPackageConfigSection.MINIMUM_PYTHON_2_LANGUAGE_VERSION
+            min_python_3_y_version = int(
+                PythonPackageConfigSection.MINIMUM_PYTHON_3_LANGUAGE_VERSION.split(
+                    ".")[1])
+            for i in range(0, min_python_3_y_version):
+                language_requires = language_requires + ",!=3." + str(i) + ".*"
+        elif version == "3":
+            language_requires = \
+                ">=" + \
+                PythonPackageConfigSection.MINIMUM_PYTHON_3_LANGUAGE_VERSION
+        elif version == "2":
+            language_requires =\
+                ">=" + \
+                PythonPackageConfigSection.MINIMUM_PYTHON_2_LANGUAGE_VERSION + \
+                ",<3"
+        else:
+            raise Exception("Unexpected version passed into " +
+                            "create_language_requires function")
+        return language_requires
+
+    @staticmethod
+    def create_classifiers(version):
+        """
+        Returns the text portion of the classifiers section of a setup.py file,
+        with classifiers for supported language versions.
+
+        :param version: Supported language version in the configuration.
+        :return: The string for use with the 'classifiers' field in setup.py.
+        """
+        program_language_base = '"Programming Language : Python'
+        line_delimiter = "\n        "
+        classifiers = line_delimiter + program_language_base + '",'
+
+        python_2_versions = ["2", "2.7"]
+        min_python_3_y_version = int(
+            PythonPackageConfigSection.MINIMUM_PYTHON_3_LANGUAGE_VERSION.split(
+                ".")[1])
+        max_python_3_y_version = int(
+            PythonPackageConfigSection.MAXIMUM_PYTHON_3_LANGUAGE_VERSION.split(
+                ".")[1])
+        python_3_versions = ["3"]
+        for i in range(min_python_3_y_version, max_python_3_y_version + 1):
+            python_3_versions.append("3." + str(i))
+
+        if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
+            classifier_versions = python_2_versions + python_3_versions
+        elif version == "3":
+            classifier_versions = python_3_versions
+        elif version == "2":
+            classifier_versions = python_2_versions
+        else:
+            raise Exception("Unexpected version passed into " +
+                            "create_classifiers function")
+
+        for classifier_version in classifier_versions:
+            classifiers = classifiers + line_delimiter + \
+                          program_language_base + " :: " + \
+                          classifier_version + '",'
+
+        classifiers = classifiers[:-1]
+        return classifiers
+
+    @staticmethod
+    def create_docker_image_language_version(version):
+        """
+        Return the language version for the base Docker image to be built for
+        an application.
+
+        :param versions: Supported language version in the configuration.
+        :return: The language version for use in the Dockerfile.
+        """
+        if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
+            image_version = "3"
+        elif version == "3" or version == "2":
+            image_version = version
+        else:
+            raise Exception("Unexpected version passed into " +
+                            "create_docker_image_language_version function")
+        return image_version
+
+    @staticmethod
+    def create_installation_doc_version_text(version):
+        """
+        Return the supported language version text for use in the installation
+        documentation.
+
+        :param version: Supported language version from the configuration.
+        :return: The language version text.
+        """
+        os_text = "installed within a Windows or Linux environment."
+        if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
+            version_text = \
+                PythonPackageConfigSection.MINIMUM_PYTHON_2_LANGUAGE_VERSION + \
+                " or higher in the Python 2.x series or " + \
+                PythonPackageConfigSection.MINIMUM_PYTHON_3_LANGUAGE_VERSION + \
+                " or higher in the Python 3.x series " + \
+                os_text
+        elif version == "3":
+            version_text = \
+                PythonPackageConfigSection.MINIMUM_PYTHON_3_LANGUAGE_VERSION + \
+                " or higher " + os_text
+        elif version == "2":
+            version_text = \
+                PythonPackageConfigSection.MINIMUM_PYTHON_2_LANGUAGE_VERSION + \
+                " or higher " + os_text + \
+                " (Python 3 is not supported at this time)"
+        else:
+            raise Exception("Unexpected version passed into " +
+                            "create_installation_doc_version_text function")
+        return version_text

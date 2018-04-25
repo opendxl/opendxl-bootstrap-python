@@ -1,14 +1,15 @@
+from __future__ import absolute_import
 import shutil
-import pkg_resources
 import logging
-import os
-
 from threading import RLock
-from ConfigParser import ConfigParser
+import os
+import pkg_resources
+
 from dxlclient.client import DxlClient
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.callbacks import EventCallback, RequestCallback
 from dxlclient._thread_pool import ThreadPool
+from ._compat import ConfigParser
 
 
 # Configure local logger
@@ -141,7 +142,8 @@ class Application(object):
         if pkg_resources.resource_exists(mod, self.LIB_CONFIG_DIR):
             # Create configuration directory if not found
             if not os.access(self._config_dir, os.R_OK):
-                logger.info("Configuration directory '{0}' not found, creating...".format(self._config_dir))
+                logger.info("Configuration directory '%s' not found, creating...",
+                            self._config_dir)
                 os.makedirs(self._config_dir)
 
             # Count of current configuration files
@@ -150,16 +152,24 @@ class Application(object):
 
             # Create configuration files if not found
             files = pkg_resources.resource_listdir(mod, self.LIB_APP_CONFIG_DIR)
-            for f in files:
-                config_path = os.path.join(self._config_dir, f)
+            for file_name in files:
+                config_path = os.path.join(self._config_dir, file_name)
                 if not os.access(config_path, os.R_OK):
-                    f_lower = f.lower()
-                    # Copy configuration file. Only copy logging file if the directory was empty
-                    if not(f_lower.endswith(".py") or f_lower.endswith(".pyc")) and \
-                            (f_lower != Application.LOGGING_CONFIG_FILE or config_files_count == 0):
-                        logger.info("Configuration file '{0}' not found, creating...".format(f))
+                    resource_filename = pkg_resources.resource_filename(
+                        mod, self.LIB_APP_CONFIG_DIR + "/" + file_name)
+                    f_lower = file_name.lower()
+                    # Copy configuration file. Only copy logging file if the
+                    # directory was empty
+                    if not os.path.isdir(resource_filename) and \
+                            not(f_lower.endswith(".py")) and \
+                            not(f_lower.endswith(".pyc")) and \
+                            (f_lower != Application.LOGGING_CONFIG_FILE or
+                             config_files_count == 0):
+                        logger.info(
+                            "Configuration file '%s' not found, creating...",
+                            file_name)
                         shutil.copyfile(pkg_resources.resource_filename(
-                            mod, self.LIB_APP_CONFIG_DIR + "/" + f), config_path)
+                            mod, self.LIB_APP_CONFIG_DIR + "/" + file_name), config_path)
 
         if not os.access(self._dxlclient_config_path, os.R_OK):
             raise Exception(
@@ -186,6 +196,7 @@ class Application(object):
         # Load incoming pool settings
         #
 
+        # pylint: disable=bare-except
         try:
             self._incoming_queue_size = config.getint(self.INCOMING_MESSAGE_POOL_CONFIG_SECTION,
                                                       self.QUEUE_SIZE_CONFIG_PROP)
@@ -224,10 +235,11 @@ class Application(object):
         config = DxlClientConfig.create_dxl_config_from_file(self._dxlclient_config_path)
         config.incoming_message_thread_pool_size = self._incoming_thread_count
         config.incoming_message_queue_size = self._incoming_queue_size
-        logger.info("Incoming message configuration: queueSize={0}, threadCount={1}".format(
-            config.incoming_message_queue_size, config.incoming_message_thread_pool_size))
-        logger.info("Message callback configuration: queueSize={0}, threadCount={1}".format(
-            self._callbacks_queue_size, self._callbacks_thread_count))
+        logger.info("Incoming message configuration: queueSize=%d, threadCount=%d",
+                    config.incoming_message_queue_size,
+                    config.incoming_message_thread_pool_size)
+        logger.info("Message callback configuration: queueSize=%d, threadCount=%d",
+                    self._callbacks_queue_size, self._callbacks_thread_count)
 
         self._dxl_client = DxlClient(config)
         logger.info("Attempting to connect to DXL fabric ...")

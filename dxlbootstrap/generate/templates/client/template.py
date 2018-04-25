@@ -1,22 +1,15 @@
+from __future__ import absolute_import
+import re
 from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \
     import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
-from dxlbootstrap import get_version
 
 
 class ClientTemplateConfig(TemplateConfig):
     """
     Configuration for the client template
     """
-
-    def __init__(self, config):
-        """
-        Constructs the configuration
-
-        :param config: The Python configuration to wrap
-        """
-        super(ClientTemplateConfig, self).__init__(config)
 
     @property
     def client_section(self):
@@ -64,7 +57,7 @@ class ClientTemplateConfig(TemplateConfig):
 
                 :return: The list of package names that the install requires
                 """
-                return ["dxlbootstrap>=0.1.3", "dxlclient"]
+                return ["dxlbootstrap>=0.2.0", "dxlclient>=4.1.0.184"]
 
         return ClientConfigSection(self)
 
@@ -138,7 +131,12 @@ class ClientTemplate(Template):
                                           {"name": client_section.name,
                                            "installRequires": self.create_install_requires(
                                                client_section.install_requires),
-                                           "packages": "", "package_data": ""})
+                                           "pythonRequires": self.create_language_requires(
+                                               client_section.language_version),
+                                           "packages": "", "package_data": "",
+                                           "classifiers": self.create_classifiers(
+                                               client_section.language_version)
+                                          })
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("LICENSE", "../../app/static/LICENSE.tmpl")
@@ -148,7 +146,9 @@ class ClientTemplate(Template):
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
-                                          {"name": client_section.name})
+                                          {"name": client_section.name,
+                                           "versionTag": self.create_dist_version_tag(
+                                               client_section.language_version)})
         root.add_child(file_comp)
         file_comp = FileTemplateComponent("clean.py", "../../app/static/clean.py.tmpl",
                                           {"name": client_section.name})
@@ -187,7 +187,8 @@ class ClientTemplate(Template):
                                           {"clientClassName": client_section.client_class_name,
                                            "fullName": client_section.full_name,
                                            "additionalImports":
-                                               ("from dxlclient.message import Request\n"
+                                               ("from __future__ import absolute_import\n"
+                                                "from dxlclient.message import Request\n"
                                                 "from dxlbootstrap.util import MessageUtils\n"
                                                 if include_example else "")})
 
@@ -277,10 +278,16 @@ class ClientTemplate(Template):
         doc_dir = DirTemplateComponent("doc")
         root.add_child(doc_dir)
 
+        copyright_body = re.sub(r"^Copyright ", "",
+                                client_section.copyright, flags=re.IGNORECASE)
         file_comp = FileTemplateComponent("conf.py", "../../app/static/doc/conf.py.tmpl",
-                                          {"copyright": client_section.copyright,
+                                          {"copyright": copyright_body,
                                            "fullName": client_section.full_name,
                                            "name": client_section.name})
+        doc_dir.add_child(file_comp)
+
+        file_comp = FileTemplateComponent("docutils.conf",
+                                          "../../app/static/doc/docutils.conf.tmpl")
         doc_dir.add_child(file_comp)
 
         sdk_dir = DirTemplateComponent("sdk")
@@ -302,7 +309,13 @@ class ClientTemplate(Template):
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("installation.rst", "doc/sdk/installation.rst.tmpl",
-                                          {"name": client_section.name})
+                                          {"name": client_section.name,
+                                           "pythonVersion":
+                                               self.create_installation_doc_version_text(
+                                                   client_section.language_version),
+                                           "versionTag": self.create_dist_version_tag(
+                                               client_section.language_version)
+                                          })
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("sampleconfig.rst", "../../app/static/doc/sdk/sampleconfig.rst.tmpl",

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import sys
 import os
 
@@ -29,7 +30,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'McAfee OpenDXL Bootstrap Application'
-copyright = u'2017, McAfee Inc'
+copyright = u'2018, McAfee Inc'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -61,3 +62,4 @@ autoclass_content = 'both'
 
 modindex_common_prefix = ['dxlbootstrap.']
 
+html_use_smartypants = False

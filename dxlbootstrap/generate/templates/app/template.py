@@ -1,22 +1,15 @@
+from __future__ import absolute_import
+import re
 from dxlbootstrap.generate.core.template \
     import Template, TemplateConfig, TemplateConfigSection, PythonPackageConfigSection
 from dxlbootstrap.generate.core.component \
     import DirTemplateComponent, FileTemplateComponent, CodeTemplateComponent
-from dxlbootstrap import get_version
 
 
 class AppTemplateConfig(TemplateConfig):
     """
     Configuration for the application template
     """
-
-    def __init__(self, config):
-        """
-        Constructs the configuration
-
-        :param config: The Python configuration to wrap
-        """
-        super(AppTemplateConfig, self).__init__(config)
 
     @property
     def application_section(self):
@@ -71,7 +64,7 @@ class AppTemplateConfig(TemplateConfig):
 
                 :return: The list of package names that the install requires
                 """
-                return ["dxlbootstrap>=0.1.3", "dxlclient"]
+                return ["dxlbootstrap>=0.2.0", "dxlclient>=4.1.0.184"]
 
         return ApplicationConfigSection(self)
 
@@ -245,9 +238,17 @@ class AppTemplate(Template):
                                           {"name": app_section.name,
                                            "installRequires": self.create_install_requires(
                                                app_section.install_requires),
-                                           "packages": ",\n        \"${name}._config.app\"",
-                                           "package_data": ",\n        \"" +
-                                                           app_section.name + "._config.app\" : ['*']"})
+                                           "pythonRequires": self.create_language_requires(
+                                               app_section.language_version),
+                                           "packages": ',\n        "' +
+                                                       app_section.name +
+                                                       '._config.app"',
+                                           "package_data": ',\n        "' +
+                                                           app_section.name +
+                                                           "._config.app\" : ['*']",
+                                           "classifiers": self.create_classifiers(
+                                               app_section.language_version)
+                                          })
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("LICENSE", "LICENSE.tmpl")
@@ -257,7 +258,9 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("dist.py", "dist.py.tmpl",
-                                          {"name": app_section.name})
+                                          {"name": app_section.name,
+                                           "versionTag": self.create_dist_version_tag(
+                                               app_section.language_version)})
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("clean.py", "clean.py.tmpl",
@@ -265,7 +268,11 @@ class AppTemplate(Template):
         root.add_child(file_comp)
 
         file_comp = FileTemplateComponent("Dockerfile", "Dockerfile.tmpl",
-                                          {"name": app_section.name})
+                                          {"name": app_section.name,
+                                           "pythonVersion":
+                                               self.create_docker_image_language_version(
+                                                   app_section.language_version)
+                                          })
         root.add_child(file_comp)
 
     @staticmethod
@@ -361,10 +368,16 @@ class AppTemplate(Template):
         doc_dir = DirTemplateComponent("doc")
         root.add_child(doc_dir)
 
+        copyright_body = re.sub(r"^Copyright ", "",
+                                app_section.copyright, flags=re.IGNORECASE)
         file_comp = FileTemplateComponent("conf.py", "doc/conf.py.tmpl",
-                                          {"copyright": app_section.copyright,
+                                          {"copyright": copyright_body,
                                            "fullName": app_section.full_name,
                                            "name": app_section.name})
+        doc_dir.add_child(file_comp)
+
+        file_comp = FileTemplateComponent("docutils.conf",
+                                          "doc/docutils.conf.tmpl")
         doc_dir.add_child(file_comp)
 
         sdk_dir = DirTemplateComponent("sdk")
@@ -386,7 +399,13 @@ class AppTemplate(Template):
         sdk_dir.add_child(file_comp)
 
         file_comp = FileTemplateComponent("installation.rst", "doc/sdk/installation.rst.tmpl",
-                                          {"name": app_section.name})
+                                          {"name": app_section.name,
+                                           "pythonVersion":
+                                               self.create_installation_doc_version_text(
+                                                   app_section.language_version),
+                                           "versionTag": self.create_dist_version_tag(
+                                               app_section.language_version
+                                           )})
         sdk_dir.add_child(file_comp)
         file_comp = FileTemplateComponent("running.rst", "doc/sdk/running.rst.tmpl",
                                           {"name": app_section.name})
@@ -425,9 +444,9 @@ class AppTemplate(Template):
                 ret += "\n"
                 if components_dict["has_services"]:
                     ret += "from dxlclient.service import ServiceRegistrationInfo\n"
-                    ret += "from requesthandlers import *\n"
+                    ret += "from .requesthandlers import *\n"
                 if components_dict["has_events"]:
-                    ret += "from eventhandlers import *\n"
+                    ret += "from .eventhandlers import *\n"
             return ret
 
         config = context.template.template_config
@@ -494,7 +513,7 @@ class AppTemplate(Template):
         app_dir = components_dict["app_dir"]
 
         event_handlers = app_section.event_handlers
-        if len(event_handlers) > 0:
+        if event_handlers:
             components_dict["has_events"] = True
             register_event_handler_def_comp = CodeTemplateComponent("app/code/register_event_handler_def.code.tmpl")
             register_event_handler_def_comp.indent_level = 1
@@ -542,7 +561,7 @@ class AppTemplate(Template):
 
         service_names = app_section.services
         requests_file_comp = None
-        if len(service_names) > 0:
+        if service_names:
             components_dict["has_services"] = True
             register_services_def_comp = CodeTemplateComponent("app/code/register_services_def.code.tmpl")
             register_services_def_comp.indent_level = 1

@@ -3,11 +3,13 @@
 # Copyright (c) 2017 McAfee Inc. - All Rights Reserved.
 ################################################################################
 
+from __future__ import absolute_import
+from __future__ import print_function
 import logging
-from ConfigParser import ConfigParser
 
 from dxlbootstrap.generate.templates.app.template import AppTemplate
 from dxlbootstrap.generate.templates.client.template import ClientTemplate
+from .._compat import ConfigParser
 
 # Configure local logger
 logger = logging.getLogger(__name__)
@@ -72,7 +74,7 @@ class DxlBootstrap(object):
 
             template = self._TEMPLATES[template_name]()
             template.run(self._load_configuration(config_file), dest_folder)
-            print "Generation succeeded."
-        except Exception as e:
-            print "Error: {0}\n".format(str(e))
+            print("Generation succeeded.")
+        except Exception as ex: # pylint: disable=broad-except
+            print("Error: {0}\n".format(str(ex)))
             logger.exception("Error during generation.")
