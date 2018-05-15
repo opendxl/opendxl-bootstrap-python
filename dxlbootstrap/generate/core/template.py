@@ -469,7 +469,7 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
         :param version: Supported language version in the configuration.
         :return: The string for use with the 'classifiers' field in setup.py.
         """
-        program_language_base = '"Programming Language : Python'
+        program_language_base = '"Programming Language :: Python'
         line_delimiter = "\n        "
         classifiers = line_delimiter + program_language_base + '",'
 
