@@ -52,5 +52,4 @@ class Client(object):
         # Return a dictionary corresponding to the response payload
         if res.message_type != Message.MESSAGE_TYPE_ERROR:
             return res
-        else:
-            raise Exception("Error: " + res.error_message + " (" + str(res.error_code) + ")")
+        raise Exception("Error: " + res.error_message + " (" + str(res.error_code) + ")")
