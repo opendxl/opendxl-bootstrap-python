@@ -513,7 +513,7 @@ class Template(ABCMeta('ABC', (object,), {'__slots__': ()})): # compatible metac
         """
         if version == PythonPackageConfigSection.UNIVERSAL_LANGUAGE_VERSION:
             image_version = "3"
-        elif version == "3" or version == "2":
+        elif version in ("2", "3"):
             image_version = version
         else:
             raise Exception("Unexpected version passed into " +
