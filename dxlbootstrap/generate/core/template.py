@@ -185,7 +185,7 @@ class PythonPackageConfigSection(TemplateConfigSection):
 
     MINIMUM_PYTHON_2_LANGUAGE_VERSION = "2.7.9"
     MINIMUM_PYTHON_3_LANGUAGE_VERSION = "3.4"
-    MAXIMUM_PYTHON_3_LANGUAGE_VERSION = "3.6"
+    MAXIMUM_PYTHON_3_LANGUAGE_VERSION = "3.7"
     UNIVERSAL_LANGUAGE_VERSION = "universal"
 
     @property
