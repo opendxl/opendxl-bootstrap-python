@@ -134,7 +134,9 @@ disable=print-statement,
         too-many-instance-attributes,
         too-many-locals,
         similarities,
-        useless-object-inheritance
+        useless-object-inheritance,
+        literal-comparison,
+        unnecessary-pass
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
